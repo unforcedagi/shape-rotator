@@ -39,7 +39,7 @@ button { font: inherit; }
 #top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
   padding: 14px 0 12px; transition: opacity 400ms ease; }
 .back { display: inline-flex; align-items: center; gap: 7px; text-decoration: none;
-  color: var(--fg-3); font-size: 12.5px; letter-spacing: .02em; min-height: 30px;
+  color: var(--fg-3); font-size: 12.5px; letter-spacing: .02em; min-height: 40px;
   transition: color var(--ease); }
 .back:hover { color: var(--accent); }
 h1 { font-size: clamp(24px, 3.6vw, 36px); font-weight: 300; letter-spacing: -.03em;
@@ -129,7 +129,7 @@ canvas#strip { display: block; width: 100%; height: 6px; border-radius: 3px; }
 /* ---------- segmented modes ---------- */
 #modes { display: inline-flex; padding: 4px; gap: 2px; border: 1px solid var(--line);
   border-radius: 999px; background: rgba(255,255,255,.02); }
-#modes button { min-height: 40px; padding: 0 20px; border: 0; border-radius: 999px;
+#modes button { min-height: 44px; padding: 0 20px; border: 0; border-radius: 999px;
   background: transparent; color: var(--fg-3); font-size: 14px; cursor: pointer;
   transition: color var(--ease), background var(--ease); }
 #modes button:hover { color: var(--fg-2); }
@@ -138,11 +138,11 @@ canvas#strip { display: block; width: 100%; height: 6px; border-radius: 3px; }
 /* ---------- help ---------- */
 #helprow { display: flex; align-items: center; gap: 12px; color: var(--fg-2); font-size: 13px; }
 #helprow label { letter-spacing: .02em; }
-input[type=range] { width: 132px; accent-color: var(--accent); height: 28px; cursor: pointer; }
+input[type=range] { width: 132px; accent-color: var(--accent); height: 44px; cursor: pointer; }
 #cuev { font-variant-numeric: tabular-nums; color: var(--fg-3); font-size: 12px;
   min-width: 34px; display: inline-block; }
-#fade { min-height: 34px; padding: 0 14px; border-radius: 999px; background: transparent;
-  border: 1px solid var(--line); color: var(--fg-2); font-size: 12.5px; cursor: pointer;
+#fade { min-height: 44px; padding: 0 17px; border-radius: 999px; background: transparent;
+  border: 1px solid var(--line); color: var(--fg-2); font-size: 13px; cursor: pointer;
   transition: border-color var(--ease), color var(--ease); }
 #fade:hover { border-color: rgba(232,194,106,.5); color: var(--accent); }
 #restart { display: none; min-height: 48px; padding: 0 26px; border-radius: 999px;
@@ -179,7 +179,7 @@ input[type=range] { width: 132px; accent-color: var(--accent); height: 28px; cur
   align-items: center; justify-content: space-between; padding: 18px 22px 14px;
   border-bottom: 1px solid var(--line); z-index: 2; }
 #drawer .dh h2 { margin: 0; font-size: 17px; font-weight: 400; letter-spacing: -.01em; }
-#close { width: 40px; height: 40px; border-radius: 999px; background: transparent;
+#close { width: 44px; height: 44px; border-radius: 999px; background: transparent;
   border: 1px solid var(--line); color: var(--fg-2); font-size: 17px; cursor: pointer; }
 #close:hover { color: var(--fg); border-color: rgba(255,255,255,.22); }
 #drawer .body { padding: 4px 22px 60px; }
@@ -190,11 +190,11 @@ input[type=range] { width: 132px; accent-color: var(--accent); height: 28px; cur
 #params { display: flex; flex-direction: column; gap: 4px; }
 #params label { display: grid; grid-template-columns: 62px 1fr 46px; align-items: center;
   gap: 10px; font-size: 12.5px; color: var(--fg-2); }
-#params input[type=range] { width: 100%; accent-color: #6d7686; height: 24px; }
+#params input[type=range] { width: 100%; accent-color: #6d7686; height: 34px; }
 #params .num { font-family: var(--mono); font-size: 11px; color: var(--fg-3);
   text-align: right; font-variant-numeric: tabular-nums; }
 .pills { display: flex; flex-wrap: wrap; gap: 8px; }
-.pills button { min-height: 36px; padding: 0 14px; border-radius: 999px; background: transparent;
+.pills button { min-height: 44px; padding: 0 16px; border-radius: 999px; background: transparent;
   border: 1px solid var(--line); color: var(--fg-2); font-size: 12.5px; cursor: pointer;
   transition: border-color var(--ease), color var(--ease), background var(--ease); }
 .pills button:hover { color: var(--fg); border-color: rgba(255,255,255,.2); }
@@ -215,7 +215,7 @@ input[type=range] { width: 132px; accent-color: var(--accent); height: 28px; cur
 #drawer .links a { text-decoration: underline; text-decoration-color: rgba(255,255,255,.2);
   text-underline-offset: 2px; }
 #drawer .links a:hover { color: var(--accent); }
-#wipe { min-height: 36px; padding: 0 14px; border-radius: 999px; background: transparent;
+#wipe { min-height: 44px; padding: 0 16px; border-radius: 999px; background: transparent;
   border: 1px solid var(--line); color: var(--fg-3); font-size: 12px; cursor: pointer;
   font-family: var(--sans); margin-top: 12px; }
 #wipe:hover { color: var(--fg-2); border-color: rgba(255,255,255,.2); }
