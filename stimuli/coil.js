@@ -59,7 +59,7 @@ export default {
     const name = palName(this, opts);
     const P = PALETTES[name];
     drawCloud(ctx, cl, m, cue, {
-      fill: 0.31, size: 2.6, alpha: 0.85, mirror: mirror,
+      fill: 0.26, size: 2.6, alpha: 0.85, mirror: mirror,
       colors: [P.ink], blend: P.blend
     });
   }

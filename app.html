@@ -86,7 +86,9 @@ canvas#c { display: block; width: 100%; height: 100%; background: #000; }
   justify-content: center; pointer-events: none; text-align: center; padding: 20px;
   font-weight: 300; font-size: 15px; color: var(--fg-2); letter-spacing: .01em; }
 #banner.big { font-size: clamp(70px, 15vw, 150px); line-height: 1; font-weight: 300;
-  color: var(--accent); }
+  color: var(--fg); }
+#banner.big.left { color: var(--left); }
+#banner.big.right { color: var(--right); }
 #banner.count { font-size: clamp(56px, 11vw, 110px); line-height: 1; font-weight: 200;
   color: var(--fg); opacity: .85; }
 #banner.chip { align-items: flex-start; justify-content: flex-start; }
@@ -97,7 +99,8 @@ canvas#c { display: block; width: 100%; height: 100%; background: #000; }
 #stage.paper #banner.chip span, #stage.paper #banner.msg span {
   color: #23211a; background: rgba(244,241,232,.72); border-color: rgba(0,0,0,.14); }
 #stage.paper #banner.count { color: #17150f; }
-#stage.paper #banner.big { color: #8a6412; }
+#stage.paper #banner.big.left { color: #145f75; }
+#stage.paper #banner.big.right { color: #8a5a12; }
 #stage.paper #halves div { color: rgba(0,0,0,.22); }
 #flash { position: absolute; inset: 0; pointer-events: none; opacity: 0;
   background: radial-gradient(90% 70% at 50% 50%, rgba(232,194,106,.22), rgba(232,194,106,0) 70%); }
@@ -717,7 +720,8 @@ function draw(now) {
     } else if (drill.phase === 'gap') {
       setMsg('hold whatever you see …');
     } else if (drill.phase === 'target') {
-      banner.className = 'big';
+      // the same two colours as the strip: cyan for left, amber for right
+      banner.className = 'big ' + (drill.target === LEFT ? 'left' : 'right');
       banner.textContent = ARROW[drill.target];
     } else if (drill.phase === 'done') {
       banner.className = ''; banner.textContent = '';
