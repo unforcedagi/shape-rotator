@@ -60,7 +60,7 @@
   <h1>Reverse Reverse</h1>
   <p class="sub">the shape rotator test &mdash; can you see it both ways?</p>
 
-  <p class="lede">Which way is the arrow spinning? Both. Nine looping animations, each of them
+  <p class="lede">Which way is the arrow spinning? Both. A dozen-odd looping animations, each of them
     honestly ambiguous: the picture on the screen is equally consistent with the object turning one
     way and with it turning the other, and nothing in the image can settle it. Your visual system
     settles it anyway, silently, and then changes its mind. This site is a place to stop being a
@@ -69,25 +69,25 @@
 
   <div id="notice"></div>
 
-  <p id="try"><span class="lead">try this first</span> open the <a href="app.html?s=arrow&amp;mode=free">arrow</a>
+  <p id="try"><span class="lead">try this first</span> open the <a href="app.html?s=ring-arrow&amp;mode=free">ring arrow</a>
     and just watch for twenty seconds. Somewhere in there it will reverse on its own and you will feel
     it happen. Now drag <b>cue</b> to 1 — the near face lights up, and the real direction is suddenly
     obvious. Press <b>fade</b>, and try to keep seeing that direction as the help drains away over
     eight seconds. Then try to lose it on purpose. When you can do that, go and do it on
     <a href="app.html?s=sphere&amp;mode=free">sphere</a>, which is the version the labs use.</p>
 
-  <h2>the nine</h2>
+  <h2>the set</h2>
   <div id="grid"></div>
 
   <h2>modes</h2>
   <div class="modes">
-    <a href="app.html?s=arrow&amp;mode=free"><b>free</b><span>Watch. Press ← / → (or tap a half of the
+    <a href="app.html?s=ring-arrow&amp;mode=free"><b>free</b><span>Watch. Press ← / → (or tap a half of the
       canvas) whenever what you see changes; a strip under the canvas draws your percept over time,
       with flip count and mean hold.</span></a>
-    <a href="app.html?s=arrow&amp;mode=drill"><b>drill</b><span>A big arrow appears. Flip your percept
+    <a href="app.html?s=ring-arrow&amp;mode=drill"><b>drill</b><span>A big arrow appears. Flip your percept
       to match it, then press that key. Ten rounds, median latency, misses, and a history kept in this
       browser.</span></a>
-    <a href="app.html?s=arrow&amp;mode=feed"><b>feed</b><span>All nine, fifteen seconds each, no
+    <a href="app.html?s=ring-arrow&amp;mode=feed"><b>feed</b><span>The whole set, fifteen seconds each, no
       controls. Like scrolling a timeline of these things, except the arrow keys still record what
       you saw.</span></a>
   </div>
@@ -164,7 +164,7 @@
       popular form — Nobuyuki Kayahara's spinning dancer, 2003. The arrow and the chair are the same
       construction with the paper the other way up: a flat light fill on the dark ground, no outline
       and no interior edge, so all you are given is a shape that widens and narrows.</p>
-    <p><strong>Honest weaknesses.</strong> The nine are not equally good, and the page order is the
+    <p><strong>Honest weaknesses.</strong> They are not equally good, and the page order is the
       honest order. The arrow is first because it is the loop that went round this week and because it
       is the cleanest case in the set: an arrow is mirror-symmetric about its own vertical plane, so
       its depth-mirror is <em>the same arrow</em>, and the two readings are the same picture rather
@@ -216,13 +216,17 @@
 <script type="module">
 import { STIMULI, defaults } from './stimuli/index.js';
 import { clear } from './lib/render.js';
+import { bgOf } from './lib/palette.js';
 
 const HINT = {
-  arrow: 'start here', chair: 'familiar', sphere: 'the lab classic', cylinder: 'easy',
-  cube: 'easy', lissajous: 'medium', ring: 'medium', silhouette: 'hard', 'dual-axis': 'hardest'
+  'ring-arrow': 'start here', chair: 'familiar', tetra: 'clean', banana: 'fun',
+  pyramid: 'clean', orb: 'flow', coil: 'on paper', arrow: 'ours',
+  sphere: 'the lab classic', cylinder: 'easy', cube: 'easy', lissajous: 'medium',
+  ring: 'medium', silhouette: 'hard', 'dual-axis': 'hardest'
 };
 
 const PHASE0 = 0.13;   // never park the previews on a flat, degenerate pose
+const PREVIEW = { detail: 0.45 };
 const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let enabled = !reduced;      // does the visitor want motion at all
 let playing = enabled;       // is the loop currently running
@@ -269,9 +273,9 @@ function frame(now) {
   for (const c of cells) {
     const period = c.p.period || 6;
     const phase = (t / 1000 / period + PHASE0) % 1;
-    clear(c.ctx, c.s.bg || '#0b0b10');
-    // previews run at reduced mesh detail; dots/wires are cheap enough as is
-    c.s.draw(c.ctx, phase, c.p, 0, { detail: 0.45 });
+    clear(c.ctx, bgOf(c.s, PREVIEW));
+    // previews run at reduced dot counts and mesh detail
+    c.s.draw(c.ctx, phase, c.p, 0, PREVIEW);
   }
 }
 function loop(now) { frame(now); if (playing) raf = requestAnimationFrame(loop); }

@@ -83,7 +83,7 @@
 <body>
 <div id="wrap">
   <header id="head">
-    <h1><span id="title">Reverse Reverse</span> <a href="./">← all nine</a></h1>
+    <h1><span id="title">Reverse Reverse</span> <a href="./">← all of them</a></h1>
     <p id="tag"></p>
     <p id="try"><span class="lead">try this</span><span id="trytext"></span></p>
   </header>
@@ -139,6 +139,7 @@
 <script type="module">
 import { STIMULI, BY_ID, get, defaults, DEFAULT_ID } from './stimuli/index.js';
 import { clear } from './lib/render.js';
+import { bgOf } from './lib/palette.js';
 import { createFree, createDrill, createFeed, LEFT, RIGHT, COL, ARROW } from './lib/modes.js';
 import * as stats from './lib/stats.js';
 
@@ -174,6 +175,15 @@ let params = defaults(stim);
 let cue = 0, fadeFrom = null;
 let playing = !reduced, clockBase = performance.now(), clockAcc = 0;
 let frozen = null;                 // set by the screenshot hooks
+// `p=` in the query string forces a palette on every stimulus; without it each
+// one uses its own (dark for the figurative set, paper for the coil).
+let paletteOverride = ['dark', 'paper', 'mono'].includes(q.get('p')) ? q.get('p') : null;
+function opts(extra) {
+  const o = { detail: 1 };
+  if (paletteOverride) o.palette = paletteOverride;
+  if (extra) for (const k in extra) o[k] = extra[k];
+  return o;
+}
 
 const free = createFree(() => renderReadout());
 let drill = createDrill(10, () => { renderReadout(); });
@@ -325,7 +335,7 @@ function renderReadout() {
     const wipe = document.getElementById('wipe');
     if (wipe) wipe.onclick = () => { stats.clearAll(); renderReadout(); };
   } else {
-    readout.innerHTML = '<div><span class="k">feed</span> all nine, fifteen seconds each, no controls. ' +
+    readout.innerHTML = '<div><span class="k">feed</span> the whole set, fifteen seconds each, no controls. ' +
       'The arrow keys still record what you see. Now showing <b>' + stim.name + '</b> (' +
       (feed.index + 1) + '/' + STIMULI.length + ').</div>';
   }
@@ -347,8 +357,8 @@ function draw(now) {
   // so a recording of one period still joins to itself.
   const phase = frozen != null ? frozen : (clockNow(now) / 1000 / period + PHASE0) % 1;
 
-  clear(ctx, stim.bg || '#0b0b10');
-  stim.draw(ctx, phase, params, cue, { detail: 1 });
+  clear(ctx, bgOf(stim, opts()));
+  stim.draw(ctx, phase, params, cue, opts());
 
   if (mode === 'free') {
     free.tick(now);
