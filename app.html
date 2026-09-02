@@ -226,7 +226,9 @@ input[type=range] { width: 132px; accent-color: var(--accent); height: 28px; cur
 .idle #top, .idle #under, .idle #detailsbtn { opacity: 0; pointer-events: none; }
 
 @media (max-width: 760px) {
-  #helprow { align-self: flex-start; padding-left: 4px; }
+  #helprow { align-self: flex-start; padding-left: 4px; gap: 10px; }
+  #helprow #cuev { display: none; }
+  #helprow input[type=range] { width: 104px; }
   #stagewrap { min-height: 200px; }
   #shell { padding: 0 16px 18px; }
   #top { padding: 14px 0 12px; align-items: center; }
