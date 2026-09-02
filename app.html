@@ -2,187 +2,381 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Reverse Reverse — practice</title>
-<meta name="description" content="Practice steering what you see: bistable structure-from-motion illusions with a training-wheels depth cue you can fade away.">
+<meta name="description" content="Practice steering what you see: bistable structure-from-motion loops with a depth cue you can fade away.">
+<meta name="theme-color" content="#07080c">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="favicon.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Reverse Reverse">
+<meta property="og:description" content="Which way is it turning? Both. Learn to choose.">
+<meta property="og:image" content="https://reversereverse.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://reversereverse.app/og.png">
 <style>
-  html, body { margin: 0; min-height: 100%; background: #0b0b10; color: #c2cbd8;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    -webkit-text-size-adjust: 100%; }
-  #wrap { display: flex; flex-direction: column; align-items: center; gap: 10px;
-    padding: 14px 14px 40px; box-sizing: border-box; }
-  #head { width: 760px; max-width: 100%; }
-  #head h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.02em; margin: 0;
-    color: #dee7f2; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-  #head h1 a { color: #5fb2d4; text-decoration: none; font-size: 12px; font-weight: 400; }
-  #tag { font-size: 12px; color: #7f8a9b; margin: 5px 0 0; line-height: 1.55; }
-  #try { font-size: 11.5px; color: #aab5c4; margin: 9px 0 0; line-height: 1.6;
-    border-left: 2px solid #2a4a63; background: rgba(90,190,230,0.055);
-    padding: 5px 10px; border-radius: 0 5px 5px 0; }
-  #try .lead { color: #5d7488; text-transform: uppercase; letter-spacing: 0.09em;
-    font-size: 10px; margin-right: 4px; }
-  /* stimulus picker */
-  #picker { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
-    width: 760px; max-width: 100%; }
-  #picker button { font-size: 11.5px; padding: 4px 9px; }
-  #picker button.on { background: #1d2c3a; border-color: #38617d; color: #cfe6f4; }
-  /* stage */
-  #stage { position: relative; width: 760px; max-width: 100%; }
-  #banner { height: 46px; display: flex; align-items: center; justify-content: center;
-    font-size: 13px; color: #7f8a9b; letter-spacing: 0.04em; }
-  #banner.big { font-size: 58px; line-height: 1; color: #dee7f2; font-weight: 700; }
-  #banner.left { color: #6fd8f0; }
-  #banner.right { color: #f0b878; }
-  canvas#c { display: block; width: 100%; background: #0b0b10; border-radius: 10px;
-    touch-action: manipulation; cursor: pointer; border: 1px solid #1b1f2a; }
-  #halves { position: absolute; inset: 46px 0 0 0; display: flex; pointer-events: none; }
-  #halves div { flex: 1; display: flex; align-items: flex-end; justify-content: center;
-    padding-bottom: 6px; font-size: 11px; color: #3d4756; opacity: 0.9; }
-  canvas#strip { display: block; width: 100%; height: 26px; border-radius: 5px; margin-top: 6px; }
-  /* the twins: the same loop drawn two different ways */
-  #twins { width: 760px; max-width: 100%; }
-  #twins .pair { display: flex; gap: 10px; }
-  #twins figure { margin: 0; flex: 1; min-width: 0; }
-  #twins canvas { display: block; width: 100%; border-radius: 7px; border: 1px solid #1b1f2a; }
-  #twins figcaption { font-size: 10.5px; color: #6e7787; margin-top: 4px; line-height: 1.45; }
-  #twincap { font-size: 11.5px; color: #8f98a6; margin: 8px 0 0; line-height: 1.6;
-    border-left: 2px solid #2a4a63; padding: 4px 10px; border-radius: 0 5px 5px 0;
-    background: rgba(90,190,230,0.045); }
-  #twincap b { color: #dee7f2; }
-  #striplab { display: flex; justify-content: space-between; font-size: 10px;
-    color: #5d6675; margin-top: 3px; }
-  /* controls */
-  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
-    justify-content: center; font-size: 12px; width: 760px; max-width: 100%; }
-  .row.small { font-size: 11px; color: #7f8a9b; }
-  label { display: flex; gap: 6px; align-items: center; }
-  .glabel { font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; color: #616b7a; }
-  .grp { display: inline-flex; gap: 8px; align-items: center; }
-  input[type=range] { width: 92px; accent-color: #46a6c4; height: 22px; }
-  button { background: #111721; color: #c2cbd8; border: 1px solid #27313f;
-    border-radius: 6px; padding: 6px 12px; font: inherit; font-size: 12px;
-    cursor: pointer; min-height: 32px; }
-  button:hover { background: #1a2230; }
-  button.on { background: #1d2c3a; border-color: #38617d; color: #cfe6f4; }
-  .num { color: #9fb0c2; min-width: 30px; display: inline-block; }
-  /* readout */
-  #readout { width: 760px; max-width: 100%; font-size: 11.5px; color: #8f98a6;
-    background: #101018; border: 1px solid #1d2230; border-radius: 8px;
-    padding: 10px 12px; line-height: 1.7; }
-  #readout b { color: #dee7f2; font-weight: 600; }
-  #readout .k { color: #616b7a; text-transform: uppercase; letter-spacing: 0.08em;
-    font-size: 10px; margin-right: 5px; }
-  #readout table { border-collapse: collapse; font-size: 11px; margin-top: 6px; }
-  #readout td { padding: 1px 10px 1px 0; color: #7f8a9b; }
-  #notice { width: 760px; max-width: 100%; font-size: 12px; color: #f0b878;
-    border: 1px solid #4a3a20; background: rgba(240,184,120,0.06);
-    border-radius: 8px; padding: 10px 12px; line-height: 1.6; display: none; }
-  details { width: 760px; max-width: 100%; font-size: 12px; line-height: 1.7; color: #8f98a6; }
-  details summary { cursor: pointer; color: #767f8d; font-size: 11px; }
-  details p, details li { margin: 8px 0; }
-  details strong { color: #ccd6e2; }
-  a { color: #5fb2d4; }
-  footer { font-size: 11px; color: #666f7c; margin-top: 8px; }
-  @media (max-width: 520px) {
-    input[type=range] { width: 72px; }
-    .row { gap: 8px; }
-    #banner.big { font-size: 34px; }
-  }
+:root {
+  --bg: #07080c; --bg-2: #0d0f15; --fg: #e9ecf2; --fg-2: #9aa3b2; --fg-3: #5c6473;
+  --accent: #e8c26a; --line: rgba(255,255,255,.08);
+  --left: #6fd8f0; --right: #f0b878;
+  --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ease: 220ms cubic-bezier(.2,.7,.3,1);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--fg);
+  font-family: var(--sans); -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+button { font: inherit; }
+
+#shell { max-width: 1140px; margin: 0 auto; padding: 0 24px 20px;
+  display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ---------- top bar ---------- */
+#top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
+  padding: 14px 0 12px; transition: opacity 400ms ease; }
+.back { display: inline-flex; align-items: center; gap: 7px; text-decoration: none;
+  color: var(--fg-3); font-size: 12.5px; letter-spacing: .02em; min-height: 30px;
+  transition: color var(--ease); }
+.back:hover { color: var(--accent); }
+h1 { font-size: clamp(24px, 3.6vw, 36px); font-weight: 300; letter-spacing: -.03em;
+  margin: 2px 0 0; line-height: 1.1; }
+
+/* loop switcher */
+#switchwrap { position: relative; }
+#switchbtn { display: inline-flex; align-items: center; gap: 10px; min-height: 44px;
+  padding: 0 16px; border-radius: 999px; background: transparent; color: var(--fg-2);
+  border: 1px solid var(--line); cursor: pointer; font-size: 14px; font-weight: 400;
+  transition: border-color var(--ease), color var(--ease), background var(--ease); }
+#switchbtn:hover { color: var(--fg); border-color: rgba(255,255,255,.2); }
+#switchbtn[aria-expanded="true"] { border-color: rgba(232,194,106,.45); color: var(--fg); }
+.caret { width: 7px; height: 7px; border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translate(-2px,-2px);
+  transition: transform var(--ease); }
+#switchbtn[aria-expanded="true"] .caret { transform: rotate(-135deg) translate(-2px,-2px); }
+#menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; width: 262px;
+  max-height: min(74vh, 760px); overflow-y: auto; background: #10131b; border: 1px solid var(--line);
+  border-radius: 16px; padding: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+#menu[hidden] { display: none; }
+#menu button { display: flex; width: 100%; align-items: baseline; justify-content: space-between;
+  gap: 10px; background: none; border: 0; color: var(--fg-2); text-align: left;
+  padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 14.5px;
+  min-height: 44px; transition: background var(--ease), color var(--ease); }
+#menu button:hover { background: rgba(255,255,255,.05); color: var(--fg); }
+#menu button.on { color: var(--accent); }
+#menu button em { font-style: normal; font-size: 10px; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--fg-3); }
+#menu .sep { margin: 8px 12px 6px; padding-top: 10px; border-top: 1px solid var(--line);
+  font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--fg-3); }
+
+/* ---------- stage ---------- */
+#stagewrap { flex: 1 1 0; min-height: 250px; display: flex;
+  align-items: center; justify-content: center; }
+#stage { position: relative; height: 100%; max-height: 640px; aspect-ratio: 16 / 10;
+  max-width: 100%; border-radius: 20px; overflow: hidden; touch-action: manipulation;
+  cursor: pointer; }
+canvas#c { display: block; width: 100%; height: 100%; background: #000; }
+#halves { position: absolute; inset: 0; display: flex; pointer-events: none; }
+#halves div { flex: 1; display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 14px; font-size: 15px; color: rgba(255,255,255,.16); }
+#banner { position: absolute; inset: 0; display: flex; align-items: center;
+  justify-content: center; pointer-events: none; text-align: center; padding: 20px;
+  font-weight: 300; font-size: 15px; color: var(--fg-2); letter-spacing: .01em; }
+#banner.big { font-size: clamp(70px, 15vw, 150px); line-height: 1; font-weight: 300;
+  color: var(--accent); }
+#banner.count { font-size: clamp(56px, 11vw, 110px); line-height: 1; font-weight: 200;
+  color: var(--fg); opacity: .85; }
+#banner.chip { align-items: flex-start; justify-content: flex-start; }
+#banner.chip span { font-size: 12px; color: var(--fg-2); background: rgba(7,8,12,.6);
+  border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; backdrop-filter: blur(8px); }
+#flash { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: radial-gradient(90% 70% at 50% 50%, rgba(232,194,106,.22), rgba(232,194,106,0) 70%); }
+#flash.go { animation: flash 320ms ease-out; }
+@keyframes flash { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---------- the one question ---------- */
+#under { flex: none; display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 18px 0 0; transition: opacity 400ms ease; }
+#ask { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; }
+#askq { margin: 0; font-size: clamp(17px, 2.4vw, 22px); font-weight: 300; color: var(--fg-2);
+  letter-spacing: -.01em; }
+#answers { display: flex; gap: 14px; width: 100%; max-width: 420px; }
+.ans { flex: 1; min-height: 62px; border-radius: 16px; background: var(--bg-2);
+  border: 1px solid var(--line); color: var(--fg); font-size: 28px; line-height: 1;
+  cursor: pointer; transition: transform var(--ease), border-color var(--ease),
+  background var(--ease), color var(--ease); }
+.ans:hover { border-color: rgba(255,255,255,.2); transform: translateY(-2px); }
+.ans.hit { background: var(--accent); color: #1a1406; border-color: var(--accent); }
+.ans.cur { border-color: rgba(232,194,106,.5); color: var(--accent); }
+
+/* thin percept strip */
+#stripwrap { width: 100%; max-width: 420px; }
+canvas#strip { display: block; width: 100%; height: 6px; border-radius: 3px; }
+#striplab { margin-top: 6px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--fg-3); text-align: center; }
+#stripwrap.off { display: none; }
+
+/* ---------- segmented modes ---------- */
+#modes { display: inline-flex; padding: 4px; gap: 2px; border: 1px solid var(--line);
+  border-radius: 999px; background: rgba(255,255,255,.02); }
+#modes button { min-height: 40px; padding: 0 20px; border: 0; border-radius: 999px;
+  background: transparent; color: var(--fg-3); font-size: 14px; cursor: pointer;
+  transition: color var(--ease), background var(--ease); }
+#modes button:hover { color: var(--fg-2); }
+#modes button.on { background: rgba(232,194,106,.12); color: var(--accent); }
+
+/* ---------- help ---------- */
+#helprow { display: flex; align-items: center; gap: 12px; color: var(--fg-2); font-size: 13px; }
+#helprow label { letter-spacing: .02em; }
+input[type=range] { width: 132px; accent-color: var(--accent); height: 28px; cursor: pointer; }
+#cuev { font-variant-numeric: tabular-nums; color: var(--fg-3); font-size: 12px;
+  min-width: 34px; display: inline-block; }
+#fade { min-height: 34px; padding: 0 14px; border-radius: 999px; background: transparent;
+  border: 1px solid var(--line); color: var(--fg-2); font-size: 12.5px; cursor: pointer;
+  transition: border-color var(--ease), color var(--ease); }
+#fade:hover { border-color: rgba(232,194,106,.5); color: var(--accent); }
+#restart { display: none; min-height: 48px; padding: 0 26px; border-radius: 999px;
+  background: var(--accent); color: #1a1406; border: 0; font-size: 15px; font-weight: 500;
+  cursor: pointer; transition: background var(--ease), transform var(--ease); }
+#restart:hover { background: #f2d089; transform: translateY(-2px); }
+#restart.on { display: inline-flex; align-items: center; }
+
+/* drill summary card */
+#summary { display: none; gap: 30px; border: 1px solid var(--line); background: var(--bg-2);
+  border-radius: 16px; padding: 16px 26px; }
+#summary.on { display: flex; }
+#summary div { text-align: center; }
+#summary b { display: block; font-size: 25px; font-weight: 300; color: var(--fg);
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+#summary span { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--fg-3); }
+
+/* ---------- details drawer ---------- */
+#detailsbtn { position: fixed; right: 20px; bottom: 20px; z-index: 30; min-height: 44px;
+  padding: 0 18px; border-radius: 999px; background: rgba(13,15,21,.86); color: var(--fg-2);
+  border: 1px solid var(--line); font-size: 13px; cursor: pointer; backdrop-filter: blur(10px);
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: color var(--ease), border-color var(--ease); }
+#detailsbtn:hover { color: var(--accent); border-color: rgba(232,194,106,.4); }
+#scrim { position: fixed; inset: 0; background: rgba(3,4,7,.6); opacity: 0; z-index: 45;
+  pointer-events: none; transition: opacity var(--ease); }
+#scrim.on { opacity: 1; pointer-events: auto; }
+#drawer { position: fixed; z-index: 50; top: 0; right: 0; height: 100%; width: 400px;
+  max-width: 100%; background: #0b0d13; border-left: 1px solid var(--line);
+  transform: translateX(101%); transition: transform var(--ease);
+  overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+#drawer.on { transform: none; }
+#drawer .dh { position: sticky; top: 0; background: #0b0d13; display: flex;
+  align-items: center; justify-content: space-between; padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--line); z-index: 2; }
+#drawer .dh h2 { margin: 0; font-size: 17px; font-weight: 400; letter-spacing: -.01em; }
+#close { width: 40px; height: 40px; border-radius: 999px; background: transparent;
+  border: 1px solid var(--line); color: var(--fg-2); font-size: 17px; cursor: pointer; }
+#close:hover { color: var(--fg); border-color: rgba(255,255,255,.22); }
+#drawer .body { padding: 4px 22px 60px; }
+#drawer h3 { font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--fg-3); font-weight: 500; margin: 26px 0 12px; }
+#drawer p { font-size: 13px; line-height: 1.7; color: var(--fg-2); font-weight: 300; margin: 0 0 10px; }
+#drawer p b, #drawer p strong { color: var(--fg); font-weight: 500; }
+#params { display: flex; flex-direction: column; gap: 4px; }
+#params label { display: grid; grid-template-columns: 62px 1fr 46px; align-items: center;
+  gap: 10px; font-size: 12.5px; color: var(--fg-2); }
+#params input[type=range] { width: 100%; accent-color: #6d7686; height: 24px; }
+#params .num { font-family: var(--mono); font-size: 11px; color: var(--fg-3);
+  text-align: right; font-variant-numeric: tabular-nums; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pills button { min-height: 36px; padding: 0 14px; border-radius: 999px; background: transparent;
+  border: 1px solid var(--line); color: var(--fg-2); font-size: 12.5px; cursor: pointer;
+  transition: border-color var(--ease), color var(--ease), background var(--ease); }
+.pills button:hover { color: var(--fg); border-color: rgba(255,255,255,.2); }
+.pills button.on { background: rgba(232,194,106,.12); border-color: rgba(232,194,106,.4); color: var(--accent); }
+#twins .pair { display: flex; gap: 10px; }
+#twins figure { margin: 0; flex: 1; min-width: 0; }
+#twins canvas { display: block; width: 100%; border-radius: 10px; border: 1px solid var(--line); background: #000; }
+#twins figcaption { font-size: 10.5px; color: var(--fg-3); margin-top: 6px; line-height: 1.45; }
+#readout { font-family: var(--mono); font-size: 11.5px; line-height: 1.8; color: var(--fg-2); }
+#readout b { color: var(--fg); font-weight: 500; }
+#readout .k { color: var(--fg-3); text-transform: uppercase; letter-spacing: .1em;
+  font-size: 9.5px; margin-right: 6px; }
+#readout table { border-collapse: collapse; font-size: 11px; margin-top: 8px; width: 100%; }
+#readout td { padding: 2px 8px 2px 0; color: var(--fg-3); }
+#readout tr:first-child td { color: var(--fg-3); letter-spacing: .06em; }
+#drawer .links { margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--line);
+  font-size: 12px; color: var(--fg-3); display: flex; gap: 14px; flex-wrap: wrap; }
+#drawer .links a { text-decoration: underline; text-decoration-color: rgba(255,255,255,.2);
+  text-underline-offset: 2px; }
+#drawer .links a:hover { color: var(--accent); }
+#wipe { min-height: 36px; padding: 0 14px; border-radius: 999px; background: transparent;
+  border: 1px solid var(--line); color: var(--fg-3); font-size: 12px; cursor: pointer;
+  font-family: var(--sans); margin-top: 12px; }
+#wipe:hover { color: var(--fg-2); border-color: rgba(255,255,255,.2); }
+
+/* ---------- notice ---------- */
+#notice { display: none; margin: 12px auto 0; max-width: 720px; font-size: 13.5px;
+  color: var(--fg-2); font-weight: 300; border: 1px solid rgba(232,194,106,.28);
+  background: rgba(232,194,106,.05); border-radius: 14px; padding: 14px 16px; line-height: 1.6; }
+#notice b { color: var(--fg); font-weight: 500; }
+#notice button { margin-left: 8px; background: transparent; color: var(--accent);
+  border: 1px solid rgba(232,194,106,.4); border-radius: 999px; padding: 9px 16px;
+  font-size: 13px; cursor: pointer; min-height: 44px; }
+
+/* fade the chrome away in feed */
+.idle #top, .idle #under, .idle #detailsbtn { opacity: 0; pointer-events: none; }
+
+@media (max-width: 760px) {
+  #helprow { align-self: flex-start; padding-left: 4px; }
+  #stagewrap { min-height: 200px; }
+  #shell { padding: 0 16px 18px; }
+  #top { padding: 14px 0 12px; align-items: center; }
+  #stage { flex: none; border-radius: 0; margin-left: calc(50% - 50vw); width: 100vw;
+    max-width: none; aspect-ratio: auto; max-height: none; }
+  #under { padding: 20px 0 0; gap: 15px; }
+  #switchbtn { font-size: 13px; padding: 0 13px; }
+  h1 { font-size: 21px; }
+  .ans { min-height: 58px; font-size: 24px; }
+  #drawer { top: auto; bottom: 0; right: 0; width: 100%; height: auto; max-height: 86vh;
+    border-left: 0; border-top: 1px solid var(--line); border-radius: 20px 20px 0 0;
+    transform: translateY(101%); }
+  #detailsbtn { right: 14px; bottom: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
 </style>
 </head>
 <body>
-<div id="wrap">
-  <header id="head">
-    <h1><span id="title">Reverse Reverse</span> <a href="./">← all of them</a></h1>
-    <p id="tag"></p>
-    <p id="try"><span class="lead">try this</span><span id="trytext"></span></p>
+
+<div id="shell">
+  <header id="top">
+    <div>
+      <a class="back" href="./"><span aria-hidden="true">←</span> all loops</a>
+      <h1 id="title">Reverse Reverse</h1>
+    </div>
+    <div id="switchwrap">
+      <button id="switchbtn" aria-expanded="false" aria-haspopup="true" aria-controls="menu">
+        <span id="switchname">ring arrow</span><span class="caret" aria-hidden="true"></span>
+      </button>
+      <div id="menu" role="menu" hidden></div>
+    </div>
   </header>
 
   <div id="notice"></div>
 
-  <div id="picker"></div>
-
-  <div id="stage">
-    <div id="banner"></div>
-    <canvas id="c" width="1200" height="900"></canvas>
-    <div id="halves"><div>← tap = left</div><div>tap = right →</div></div>
-  </div>
-
-  <div id="stage2" style="width:760px;max-width:100%">
-    <canvas id="strip" width="1200" height="52"></canvas>
-    <div id="striplab"><span>90 s ago</span><span id="stripmid">what you reported seeing</span><span>now</span></div>
-  </div>
-
-  <div id="twins">
-    <div class="pair">
-      <figure><canvas id="twa" width="460" height="330"></canvas>
-        <figcaption>as shown</figcaption></figure>
-      <figure><canvas id="twb" width="460" height="330"></canvas>
-        <figcaption>mirrored in depth, turning the other way</figcaption></figure>
+  <div id="stagewrap">
+    <div id="stage">
+      <canvas id="c" width="1200" height="750"></canvas>
+      <div id="halves" aria-hidden="true"><div>←</div><div>→</div></div>
+      <div id="banner"></div>
+      <div id="flash"></div>
     </div>
-    <p id="twincap">Two different objects, two different rotations, drawn independently —
-      and at <b>cue 0</b> these two canvases are identical, pixel for pixel, forever. That is
-      the whole illusion, and it is an exact algebraic fact rather than a good approximation.
-      Push the cue up and watch them come apart: the cue is the depth information the flat
-      picture never had.</p>
   </div>
 
-  <div class="row">
-    <span class="grp"><span class="glabel">mode</span>
-      <button data-mode="free">free</button>
-      <button data-mode="drill">drill</button>
-      <button data-mode="feed">feed</button>
-    </span>
-    <span class="grp"><span class="glabel">cue</span>
-      <input id="cue" type="range" min="0" max="1" step="0.01" value="0">
-      <span class="num" id="cuev">0.00</span>
-      <button id="fade">fade 1→0</button>
-    </span>
-    <span class="grp"><span class="glabel">palette</span>
+  <div id="under">
+    <div id="ask">
+      <p id="askq">Which way is it turning?</p>
+      <div id="answers">
+        <button class="ans" id="ansL" aria-label="I see it turning left">←</button>
+        <button class="ans" id="ansR" aria-label="I see it turning right">→</button>
+      </div>
+    </div>
+
+    <div id="stripwrap">
+      <canvas id="strip" width="1200" height="12" aria-hidden="true"></canvas>
+      <div id="striplab">seen</div>
+    </div>
+
+    <div id="modes" role="group" aria-label="mode">
+      <button data-mode="free">Watch</button>
+      <button data-mode="drill">Drill</button>
+      <button data-mode="feed">Feed</button>
+    </div>
+
+    <button id="restart">Start set</button>
+
+    <div id="summary">
+      <div><b id="sMed">—</b><span>median</span></div>
+      <div><b id="sBest">—</b><span>best</span></div>
+      <div><b id="sMiss">—</b><span>misses</span></div>
+    </div>
+
+    <div id="helprow">
+      <label for="cue">help</label>
+      <input id="cue" type="range" min="0" max="1" step="0.01" value="0" aria-label="depth help">
+      <span id="cuev">0%</span>
+      <button id="fade">fade</button>
+    </div>
+  </div>
+</div>
+
+<button id="detailsbtn" aria-controls="drawer" aria-expanded="false">
+  <span aria-hidden="true">⚙</span> details</button>
+<div id="scrim"></div>
+
+<aside id="drawer" aria-label="technical details" aria-hidden="true">
+  <div class="dh"><h2>Details</h2><button id="close" aria-label="close details">✕</button></div>
+  <div class="body">
+    <h3>This loop</h3>
+    <p id="tag"></p>
+    <p id="try"><b>Try this.</b> <span id="trytext"></span></p>
+
+    <h3>Shape</h3>
+    <div id="params"></div>
+
+    <h3>Palette</h3>
+    <div class="pills" id="pals">
       <button data-pal="">auto</button>
       <button data-pal="dark">dark</button>
       <button data-pal="paper">paper</button>
       <button data-pal="mono">mono</button>
-    </span>
-    <span class="grp">
-      <button id="play">pause</button>
-      <button id="restart" style="display:none">start set</button>
-    </span>
+    </div>
+
+    <h3>Playback</h3>
+    <div class="pills"><button id="play">pause</button></div>
+    <p style="margin-top:10px">Keys: <b>←</b> / <b>→</b> report what you see, <b>space</b> pauses,
+      <b>f</b> fades the help.</p>
+
+    <h3>The twins</h3>
+    <div id="twins">
+      <div class="pair">
+        <figure><canvas id="twa" width="460" height="330"></canvas>
+          <figcaption>as shown</figcaption></figure>
+        <figure><canvas id="twb" width="460" height="330"></canvas>
+          <figcaption>mirrored in depth, turning the other way</figcaption></figure>
+      </div>
+      <p id="twincap" style="margin-top:10px">Two different objects, two different rotations, drawn
+        independently — and at <b>help 0</b> these two canvases are identical, pixel for pixel,
+        forever. That is the whole illusion, and it is an exact algebraic fact rather than a good
+        approximation. Push the help up and watch them come apart: it is the depth information the
+        flat picture never had.</p>
+    </div>
+
+    <h3>Your numbers</h3>
+    <div id="readout"></div>
+    <button id="wipe">forget my stats</button>
+
+    <div class="links">
+      <a href="./">All loops</a>
+      <a href="https://github.com/unforcedagi/shape-rotator">Source</a>
+      <a href="https://unforcedagi.github.io/sketches/">Sketches</a>
+    </div>
   </div>
-
-  <div class="row small" id="params"></div>
-
-  <div id="readout"></div>
-
-  <details id="tech">
-    <summary>techniques — how people actually force a flip</summary>
-    <ul id="techlist"></ul>
-  </details>
-
-  <footer>
-    <a href="./">index</a> ·
-    <a href="https://github.com/unforcedagi/shape-rotator">source</a> ·
-    <a href="https://unforcedagi.github.io/sketches/">sketches</a>
-  </footer>
-</div>
+</aside>
 
 <script type="module">
-import { STIMULI, BY_ID, get, defaults, DEFAULT_ID } from './stimuli/index.js';
+import { STIMULI, FIGURATIVE, LAB, get, defaults, DEFAULT_ID } from './stimuli/index.js';
 import { clear } from './lib/render.js';
 import { bgOf } from './lib/palette.js';
 import { createFree, createDrill, createFeed, LEFT, RIGHT, COL, ARROW } from './lib/modes.js';
 import * as stats from './lib/stats.js';
 
-const TECHNIQUES = [
-  'Fixate <b>one</b> dot near the edge and simply decide it is the near one. Deciding is the move; do not wait to be convinced.',
-  'Blink hard, or close your eyes for a second. The percept often reassembles the other way.',
-  'Look slightly away and keep it in peripheral vision — peripheral motion is much weaker evidence, so it gives way easily.',
-  'Imagine where the camera is. Above the object, looking down; then below, looking up.',
-  'Cover the top half with your hand, hold the direction you see there, then uncover. Then do the bottom half.',
-  'Slow the period right down. Slow rotations are more ambiguous and easier to steer.',
-  'Turn the cue up until you can see the true direction, then hit <em>fade</em> and hold on to what you saw as the help disappears.'
-];
-document.getElementById('techlist').innerHTML = TECHNIQUES.map(t => '<li>' + t + '</li>').join('');
+const TAG = {
+  'ring-arrow': 'start here', chair: 'familiar', tetra: 'clean', banana: 'fun',
+  pyramid: 'clean', orb: 'flow', coil: 'on paper', arrow: 'ours',
+  sphere: 'the lab classic', cylinder: 'easy', cube: 'easy', lissajous: 'medium',
+  ring: 'medium', silhouette: 'hard', 'dual-axis': 'hardest'
+};
 
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const strip = document.getElementById('strip'), sctx = strip.getContext('2d');
@@ -195,6 +389,10 @@ const cueEl = document.getElementById('cue'), cuev = document.getElementById('cu
 const playBtn = document.getElementById('play'), fadeBtn = document.getElementById('fade');
 const restartBtn = document.getElementById('restart');
 const paramsRow = document.getElementById('params');
+const ansL = document.getElementById('ansL'), ansR = document.getElementById('ansR');
+const stripWrap = document.getElementById('stripwrap');
+const flash = document.getElementById('flash');
+const summary = document.getElementById('summary');
 
 const PHASE0 = 0.13;   // a paused page should not sit on a flat, degenerate pose
 const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -240,27 +438,31 @@ function setPlaying(v, now) {
 }
 
 // --- layout ----------------------------------------------------------------
+// The canvas boxes are sized in CSS, so nothing here can move the page: this
+// only sets the backing store to match, which is why there is no layout shift.
 function resize() {
   const dpr = Math.min(2, window.devicePixelRatio || 1);
-  const w = cv.clientWidth || 760;
-  const h = Math.round(w * 0.72);
-  cv.style.height = h + 'px';
+  const w = cv.clientWidth || 760, h = cv.clientHeight || 470;
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-  strip.width = Math.round((strip.clientWidth || w) * dpr); strip.height = Math.round(26 * dpr);
-  draw(performance.now());
+  strip.width = Math.round((strip.clientWidth || w) * dpr);
+  strip.height = Math.round(6 * dpr);
 }
 window.addEventListener('resize', resize);
+// the stage is a flex child, so it also changes size when the controls under it
+// do (drill's start button, the summary card). Watch the box, not the window.
+if (window.ResizeObserver) new ResizeObserver(() => resize()).observe(cv);
 
 // --- stimulus --------------------------------------------------------------
 function setStim(id, keepUrl) {
   stim = get(id);
   params = defaults(stim);
-  document.getElementById('title').textContent = 'Reverse Reverse · ' + stim.name;
+  document.getElementById('title').textContent = stim.name;
+  document.getElementById('switchname').textContent = stim.name;
   document.title = 'Reverse Reverse — ' + stim.name;
   document.getElementById('tag').innerHTML = stim.blurb;
-  document.getElementById('trytext').textContent = ' ' + stim.tryThis;
+  document.getElementById('trytext').textContent = stim.tryThis;
   buildParams();
-  for (const b of document.querySelectorAll('#picker button')) b.classList.toggle('on', b.dataset.id === stim.id);
+  for (const b of document.querySelectorAll('#menu button')) b.classList.toggle('on', b.dataset.id === stim.id);
   if (!keepUrl) syncUrl();
   renderReadout();
 }
@@ -273,24 +475,50 @@ function syncUrl() {
   history.replaceState(null, '', u);
 }
 
-const picker = document.getElementById('picker');
-for (const s of STIMULI) {
-  const b = document.createElement('button');
-  b.textContent = s.name; b.dataset.id = s.id;
-  b.onclick = () => { if (mode === 'feed') setMode('free'); setStim(s.id); free.reset(); };
-  picker.appendChild(b);
+// --- the loop switcher -----------------------------------------------------
+const menu = document.getElementById('menu');
+const switchBtn = document.getElementById('switchbtn');
+function addItems(list) {
+  for (const s of list) {
+    const b = document.createElement('button');
+    b.dataset.id = s.id;
+    b.setAttribute('role', 'menuitem');
+    b.innerHTML = '<span></span><em></em>';
+    b.firstChild.textContent = s.name;
+    b.lastChild.textContent = TAG[s.id] || '';
+    b.onclick = () => {
+      closeMenu();
+      if (mode === 'feed') setMode('free');
+      setStim(s.id); free.reset();
+    };
+    menu.appendChild(b);
+  }
 }
+addItems(FIGURATIVE);
+const sep = document.createElement('div');
+sep.className = 'sep'; sep.textContent = 'lab stimuli';
+menu.appendChild(sep);
+addItems(LAB);
+
+function openMenu() {
+  menu.hidden = false; switchBtn.setAttribute('aria-expanded', 'true');
+  const on = menu.querySelector('button.on') || menu.querySelector('button');
+  if (on) on.focus();
+}
+function closeMenu() { menu.hidden = true; switchBtn.setAttribute('aria-expanded', 'false'); }
+switchBtn.onclick = () => { menu.hidden ? openMenu() : closeMenu(); };
+document.addEventListener('pointerdown', e => {
+  if (!menu.hidden && !menu.contains(e.target) && !switchBtn.contains(e.target)) closeMenu();
+});
 
 function buildParams() {
   paramsRow.innerHTML = '';
-  const lab = document.createElement('span');
-  lab.className = 'glabel'; lab.textContent = 'shape';
-  paramsRow.appendChild(lab);
   for (const c of stim.controls) {
     const l = document.createElement('label');
     const span = document.createElement('span'); span.textContent = c.label;
     const inp = document.createElement('input');
     inp.type = 'range'; inp.min = c.min; inp.max = c.max; inp.step = c.step; inp.value = params[c.key];
+    inp.setAttribute('aria-label', c.label);
     const out = document.createElement('span'); out.className = 'num';
     const fmt = v => (c.step < 1 ? (+v).toFixed(2) : String(Math.round(v))) + (c.unit || '');
     out.textContent = fmt(params[c.key]);
@@ -300,33 +528,77 @@ function buildParams() {
   }
 }
 
+// --- the drawer ------------------------------------------------------------
+const drawer = document.getElementById('drawer'), scrim = document.getElementById('scrim');
+const detailsBtn = document.getElementById('detailsbtn');
+function setDrawer(open) {
+  drawer.classList.toggle('on', open);
+  scrim.classList.toggle('on', open);
+  drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+  detailsBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) document.getElementById('close').focus(); else detailsBtn.focus();
+}
+detailsBtn.onclick = () => setDrawer(!drawer.classList.contains('on'));
+document.getElementById('close').onclick = () => setDrawer(false);
+scrim.onclick = () => setDrawer(false);
+
 // --- modes -----------------------------------------------------------------
 function setMode(m) {
   mode = m;
   for (const b of document.querySelectorAll('[data-mode]')) b.classList.toggle('on', b.dataset.mode === m);
-  document.getElementById('stage2').style.display = m === 'drill' ? 'none' : '';
-  document.getElementById('twins').style.display = m === 'feed' ? 'none' : '';
-  paramsRow.style.display = m === 'feed' ? 'none' : '';
-  restartBtn.style.display = m === 'drill' ? '' : 'none';
-  if (m === 'drill') { drill = createDrill(10, () => renderReadout()); banner.textContent = 'press start set'; }
-  else if (m === 'free') banner.textContent = 'which way is it turning?  ← / →';
-  else banner.textContent = '';
-  banner.className = '';
-  if (m === 'feed') feed.start(performance.now());
+  stripWrap.classList.toggle('off', m === 'drill');
+  document.body.classList.toggle('drill', m === 'drill');
+  restartBtn.classList.toggle('on', m === 'drill');
+  ansL.classList.remove('cur'); ansR.classList.remove('cur');
+  if (m !== 'drill') markCurrent();
+  summary.classList.remove('on');
+  document.getElementById('askq').textContent = m === 'drill'
+    ? 'Flip to match the arrow, then press it.' : 'Which way is it turning?';
+  if (m === 'drill') { drill = createDrill(10, () => renderReadout()); }
+  banner.className = ''; banner.textContent = '';
+  if (m === 'feed') { feed.start(performance.now()); armIdle(); }
+  else { document.body.classList.remove('idle'); clearTimeout(idleT); }
   syncUrl();
   renderReadout();
 }
 for (const b of document.querySelectorAll('[data-mode]')) b.onclick = () => setMode(b.dataset.mode);
-restartBtn.onclick = () => { drill.start(performance.now()); };
+restartBtn.onclick = () => { summary.classList.remove('on'); drill.start(performance.now()); };
+
+// feed hides the chrome after two seconds of no input
+let idleT = 0;
+function armIdle() {
+  clearTimeout(idleT);
+  document.body.classList.remove('idle');
+  if (mode !== 'feed') return;
+  idleT = setTimeout(() => { if (mode === 'feed') document.body.classList.add('idle'); }, 2000);
+}
+for (const ev of ['pointermove', 'pointerdown', 'keydown', 'wheel']) {
+  window.addEventListener(ev, armIdle, { passive: true });
+}
 
 // --- input -----------------------------------------------------------------
+function markCurrent() {
+  const d = free.current ? free.current.dir : 0;
+  ansL.classList.toggle('cur', d === LEFT);
+  ansR.classList.toggle('cur', d === RIGHT);
+}
+function hit(btn) {
+  btn.classList.add('hit');
+  setTimeout(() => btn.classList.remove('hit'), 180);
+  flash.classList.remove('go');
+  void flash.offsetWidth;
+  flash.classList.add('go');
+}
 function report(dir) {
   const now = performance.now();
+  hit(dir === LEFT ? ansL : ansR);
   if (mode === 'drill') { drill.press(dir, now); renderReadout(); return; }
   free.press(dir, now);
+  markCurrent();
 }
 window.addEventListener('keydown', e => {
   if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (e.key === 'Escape') { if (!menu.hidden) closeMenu(); else if (drawer.classList.contains('on')) setDrawer(false); return; }
   if (e.key === 'ArrowLeft' || e.key === 'a') { report(LEFT); e.preventDefault(); }
   else if (e.key === 'ArrowRight' || e.key === 'd') { report(RIGHT); e.preventDefault(); }
   else if (e.key === ' ') { setPlaying(!playing, performance.now()); e.preventDefault(); }
@@ -336,31 +608,35 @@ cv.addEventListener('pointerdown', e => {
   const r = cv.getBoundingClientRect();
   report(e.clientX - r.left < r.width / 2 ? LEFT : RIGHT);
 });
+ansL.onclick = () => report(LEFT);
+ansR.onclick = () => report(RIGHT);
 
 playBtn.onclick = () => setPlaying(!playing, performance.now());
-cueEl.oninput = () => { fadeFrom = null; cue = +cueEl.value; cuev.textContent = cue.toFixed(2); };
+function showCue() { cueEl.value = cue; cuev.textContent = Math.round(cue * 100) + '%'; }
+cueEl.oninput = () => { fadeFrom = null; cue = +cueEl.value; cuev.textContent = Math.round(cue * 100) + '%'; };
 function startFade() { fadeFrom = performance.now(); cue = 1; }
 fadeBtn.onclick = startFade;
 
-// --- readout ---------------------------------------------------------------
+// --- readout (drawer only) -------------------------------------------------
 function fmtS(ms) { return ms == null ? '—' : (ms / 1000).toFixed(2) + 's'; }
 
 function renderReadout() {
-  if (mode === 'free') {
+  if (mode === 'free' || mode === 'feed') {
     const s = free.summary();
     const t = stats.freeTotals(stim.id);
     readout.innerHTML =
-      '<div><span class="k">free</span> press <b>←</b> or <b>→</b> (or tap a half of the canvas) every time ' +
-      'what you see changes. <b>space</b> pauses, <b>f</b> fades the cue.</div>' +
       '<div><span class="k">this session</span> flips <b>' + s.flips + '</b> · mean hold <b>' +
-      fmtS(s.meanHold) + '</b> · currently seeing <b style="color:' + (free.current ? COL[free.current.dir] : '#7f8a9b') + '">' +
+      fmtS(s.meanHold) + '</b></div>' +
+      '<div><span class="k">seeing</span> <b style="color:' +
+      (free.current ? COL[free.current.dir] : '#5c6473') + '">' +
       (free.current ? ARROW[free.current.dir] : 'not reported') + '</b></div>' +
       '<div><span class="k">all time · ' + stim.id + '</span> ' + t.flips + ' flips over ' +
-      Math.round(t.seconds) + ' s in ' + t.sessions + ' sessions</div>';
-  } else if (mode === 'drill') {
+      Math.round(t.seconds) + ' s in ' + t.sessions + ' sessions</div>' +
+      (mode === 'feed' ? '<div><span class="k">feed</span> ' + (feed.index + 1) + '/' +
+        STIMULI.length + '</div>' : '');
+  } else {
     const hist = stats.drillHistory(stim.id);
-    let h = '<div><span class="k">drill</span> when the big arrow appears, flip your percept to match it, ' +
-      'then press that arrow key. Ten rounds. Wrong key = a miss.</div>';
+    let h = '';
     if (drill.phase === 'done') {
       const s = drill.summary();
       h += '<div><span class="k">set complete</span> median <b>' + fmtS(s.median) + '</b> · best <b>' +
@@ -368,6 +644,8 @@ function renderReadout() {
     } else if (drill.phase !== 'idle') {
       h += '<div><span class="k">round</span> <b>' + drill.round + ' / ' + drill.rounds + '</b>' +
         (drill.results.length ? ' · last ' + fmtS(drill.results[drill.results.length - 1].latency) : '') + '</div>';
+    } else {
+      h += '<div><span class="k">drill</span> ten rounds; a wrong key is a miss.</div>';
     }
     if (hist.length) {
       h += '<table><tr><td>past sets</td><td>median</td><td>best</td><td>misses</td></tr>' +
@@ -375,26 +653,20 @@ function renderReadout() {
           fmtS(r.median) + '</td><td>' + fmtS(r.best) + '</td><td>' + r.misses + '</td></tr>').join('') +
         '</table>';
     }
-    h += '<div style="margin-top:6px"><button id="wipe">forget my stats</button></div>';
     readout.innerHTML = h;
-    const wipe = document.getElementById('wipe');
-    if (wipe) wipe.onclick = () => { stats.clearAll(); renderReadout(); };
-  } else {
-    readout.innerHTML = '<div><span class="k">feed</span> the whole set, fifteen seconds each, no controls. ' +
-      'The arrow keys still record what you see. Now showing <b>' + stim.name + '</b> (' +
-      (feed.index + 1) + '/' + STIMULI.length + ').</div>';
   }
 }
+document.getElementById('wipe').onclick = () => { stats.clearAll(); renderReadout(); };
 
 // --- the loop --------------------------------------------------------------
 let lastDrillPhase = '';
 function draw(now) {
-  // cue fade: 1 -> 0 over 8 s
+  // help fade: 1 -> 0 over 8 s
   if (fadeFrom != null) {
     const k = (now - fadeFrom) / 8000;
     cue = k >= 1 ? 0 : 1 - k;
     if (k >= 1) fadeFrom = null;
-    cueEl.value = cue; cuev.textContent = cue.toFixed(2);
+    showCue();
   }
 
   const period = params.period || 6;
@@ -420,20 +692,27 @@ function draw(now) {
   } else if (mode === 'drill') {
     drill.tick(now);
     if (drill.phase === 'countdown') {
-      banner.className = 'big';
+      banner.className = 'count';
       banner.textContent = String(Math.max(1, drill.countdown));
     } else if (drill.phase === 'gap') {
       banner.className = ''; banner.textContent = 'hold whatever you see …';
     } else if (drill.phase === 'target') {
-      banner.className = 'big ' + (drill.target === LEFT ? 'left' : 'right');
+      banner.className = 'big';
       banner.textContent = ARROW[drill.target];
     } else if (drill.phase === 'done') {
-      banner.className = ''; banner.textContent = 'set complete — press start set to go again';
+      banner.className = ''; banner.textContent = '';
+    } else {
+      banner.className = ''; banner.textContent = 'press start set';
     }
+    restartBtn.classList.toggle('on', drill.phase === 'idle' || drill.phase === 'done');
     if (drill.phase !== lastDrillPhase) {
       if (drill.phase === 'done') {
         const s = drill.summary();
         stats.recordDrillSet(stim.id, { ts: Date.now(), median: s.median, best: s.best, misses: s.misses, n: s.n });
+        document.getElementById('sMed').textContent = fmtS(s.median);
+        document.getElementById('sBest').textContent = fmtS(s.best);
+        document.getElementById('sMiss').textContent = s.misses + '/' + s.n;
+        summary.classList.add('on');
       }
       lastDrillPhase = drill.phase;
       renderReadout();
@@ -442,8 +721,9 @@ function draw(now) {
     feed.tick(now);
     free.tick(now);
     free.drawStrip(sctx, now, 90000);
-    banner.className = '';
-    banner.textContent = stim.name + '  ·  ' + Math.ceil(feed.remaining(now) / 1000) + 's';
+    banner.className = 'chip';
+    banner.innerHTML = '<span></span>';
+    banner.firstChild.textContent = stim.name + ' · ' + Math.ceil(feed.remaining(now) / 1000) + 's';
   }
   if (mode === 'free' && ((now / 500) | 0) !== ((lastTick / 500) | 0)) renderReadout();
   lastTick = now;
@@ -454,9 +734,9 @@ let lastTick = 0, raf = 0;
 // --- reduced motion --------------------------------------------------------
 if (reduced) {
   notice.style.display = 'block';
-  notice.innerHTML = 'This site <b>is</b> motion — every illusion here is a moving image, and there is no ' +
-    'still version that does anything. Your system asks for reduced motion, so nothing is playing. ' +
-    '<button id="go" style="margin-left:8px">play anyway</button>';
+  notice.innerHTML = 'This site <b>is</b> motion — every illusion here is a moving image, and there ' +
+    'is no still version that does anything. Your system asks for reduced motion, so nothing is ' +
+    'playing. <button id="go">Play anyway</button>';
   document.getElementById('go').onclick = () => {
     notice.style.display = 'none';
     setPlaying(true, performance.now());
@@ -468,9 +748,12 @@ if (reduced) {
 window.__sr = {
   setStim: id => { setStim(id); },
   setMode: m => setMode(m),
-  setCue: v => { fadeFrom = null; cue = +v; cueEl.value = v; cuev.textContent = (+v).toFixed(2); },
+  setCue: v => { fadeFrom = null; cue = +v; showCue(); },
   setParam: (k, v) => { params[k] = +v; buildParams(); },
   setPalette: v => setPalette(v),
+  setDrawer: v => setDrawer(!!v),
+  openMenu: () => openMenu(),
+  closeMenu: () => closeMenu(),
   freezeAt: p => { frozen = p; },
   unfreeze: () => { frozen = null; },
   ready: true
@@ -480,7 +763,8 @@ window.__sr = {
 setStim(stim.id, true);
 setPalette(paletteOverride);
 setMode(mode);
-cueEl.value = cue; cuev.textContent = cue.toFixed(2);
+showCue();
+markCurrent();
 playBtn.textContent = playing ? 'pause' : 'play';
 resize();
 raf = requestAnimationFrame(draw);
