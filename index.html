@@ -137,8 +137,8 @@
       illusion. Perspective divide: a cue. Scaling dots with distance: a cue. Fog, shading, occlusion,
       z-sorting with opaque fills, a drop shadow, antialiasing that happens to differ front and back:
       all cues. So the renderer here is deliberately impoverished. Projection is orthographic —
-      <code>(x, y, z) → (x, y)</code>, no divide. At <code>cue = 0</code> every dot in a cloud is
-      emitted into a <em>single</em> path and filled once, at one radius and one alpha, so there is no
+      <code>(x, y, z) → (x, y)</code>, no divide. At <code>cue = 0</code> every dot in a cloud is the
+      same size and the same alpha and the cloud goes down as one fill per colour, so there is no
       per-dot state that could leak depth; a wire is stroked as one path at one width; the silhouette
       is the nonzero-winding union of every triangle in the mesh filled flat, which is why it has no
       interior line at all. The mesh is not depth-sorted at <code>cue = 0</code> because with a single
@@ -150,26 +150,45 @@
       size, alpha falling off with depth, lambert shading mixed in by <code>cue</code> for the
       silhouette. At <code>cue = 0</code> each of those expressions is exactly its identity, which is
       the property that makes the claim checkable rather than aspirational.</p>
-    <p><strong>Aesthetics — a training instrument, not a poster.</strong> The temptation with these
-      shapes is to make them beautiful, and beauty here means texture, and texture means cues. So the
-      palette is one colour of dot on one colour of ground, and the only chromatic decisions in the
-      whole site are the two percept colours — cyan for leftward, amber for rightward — used in the
-      timeline strip and on the drill's target arrow so that "what I saw" and "what I was asked for"
-      are the same two colours everywhere. The timeline strip is the piece that changed how the thing
-      feels to use: once your reported percept is drawn as a band of colour over ninety seconds, you
-      stop experiencing flips as events and start seeing your own bistability as a texture, with a
-      characteristic dwell time that visibly shortens as you get better at forcing it. The silhouette
-      is the one stimulus that gets its own paper-white ground, because a silhouette has to be the
-      dark thing; that is the whole point of a silhouette, and it is the oldest of these illusions in
-      popular form — Nobuyuki Kayahara's spinning dancer, 2003. The arrow and the chair are the same
-      construction with the paper the other way up: a flat light fill on the dark ground, no outline
-      and no interior edge, so all you are given is a shape that widens and narrows.</p>
+    <p><strong>Aesthetics — where the look comes from, and what it is allowed to be.</strong> The
+      first version of the figurative loops here were flat-filled low-poly solids, and they were
+      wrong in a way that is worth naming: they were blocky, and their turns were sharp, because a
+      shape with six flat faces snaps between silhouettes instead of flowing between them, and
+      because an axis lying exactly in the plane of the screen makes everything slide left and right
+      instead of wheeling. Both are fixed by copying what the loops that actually travel do. Each
+      object spins about <em>its own</em> axis, tipped fifteen to twenty degrees towards you, so the
+      top of it traces a visible circle. And nothing is filled: each one is a few thousand tiny dots
+      sampled uniformly <em>by area</em> over its surface, at one size, with no occlusion. Where the
+      surface turns edge-on, a whole band of it projects into a couple of pixels and the dots stack,
+      so the rim lights itself; where it faces you they spread out and it goes dim. That is the whole
+      shading model and it is free, because it is a fact about the projection rather than a thing
+      drawn on top of it.</p>
+    <p>Colour is the one place this could cheat, so there are exactly two rules and both are safe.
+      Colour can be attached to the object — the tetrahedron's pink corner is pink in either reading.
+      Or it can be a function of the projected image: the ring arrow's gold-to-blue gradient is keyed
+      to how high a dot lands <em>on the screen</em>, and since both readings put every dot in the
+      same place, both get the same colour. Colouring by depth would have ended the illusion and is
+      used nowhere. If you would rather have none of it, the palette switch on the app page has a
+      <b>mono</b> setting that throws all the colour away, which is the honest control. The two
+      percept colours — cyan for leftward, amber for rightward — are reserved for the timeline strip
+      and the drill's target arrow, so that "what I saw" and "what I was asked for" are the same two
+      colours everywhere. That strip is the piece that changed how the thing feels to use: once your
+      reported percept is drawn as a band of colour over ninety seconds, you stop experiencing flips
+      as events and start seeing your own bistability as a texture, with a characteristic dwell time
+      that visibly shortens as you get better at forcing it. The silhouette and the coil get a
+      paper-white ground, because ink has to be the dark thing; the silhouette is the oldest of these
+      illusions in popular form — Nobuyuki Kayahara's spinning dancer, 2003.</p>
     <p><strong>Honest weaknesses.</strong> They are not equally good, and the page order is the
-      honest order. The arrow is first because it is the loop that went round this week and because it
-      is the cleanest case in the set: an arrow is mirror-symmetric about its own vertical plane, so
-      its depth-mirror is <em>the same arrow</em>, and the two readings are the same picture rather
-      than two theories about a picture. The chair is that trick applied to an object you have
-      opinions about, and it is noticeably stickier for exactly that reason.
+      honest order. The ring arrow is first because it is the loop that went round and because its
+      silhouette never changes at all, so there is nothing to read but the head going round. The
+      chair is the same trick applied to an object you have opinions about, and it is noticeably
+      stickier for exactly that reason. The straight arrow is the cleanest case in the set: an arrow
+      of revolution is mirror-symmetric about its own vertical plane, so its depth-mirror is
+      <em>the same arrow</em>, and the two readings are the same picture rather than two theories
+      about a picture. The coil is the one place the mirror argument has to be stated carefully — a
+      helix is chiral, so its depth-mirror is the opposite-handed spring rather than the same object;
+      the picture still cannot tell the two readings apart, it just cannot tell you which spring you
+      are looking at either.
       Sphere and cylinder are the lab standards and they flip freely for almost
       everyone. The cube is a Necker cube in motion and flips readily but the flip is as much a
       figural reversal as a motion reversal, which is a slightly different phenomenon wearing the same

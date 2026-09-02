@@ -1,4 +1,4 @@
-import { TAU, makeRng, axisFrom, rotMatrix, rotateAll, drawDots } from '../lib/render.js';
+import { TAU, makeRng, spinM, rotateAll, drawDots } from '../lib/render.js';
 
 let cache = null;
 function points(n, h) {
@@ -28,10 +28,12 @@ export default {
     { key: 'h', label: 'height', min: 0.4, max: 1.1, step: 0.05, def: 0.8 },
     { key: 'r', label: 'dot', min: 1, max: 4, step: 0.25, def: 2 }
   ],
-  draw(ctx, phase, p, cue) {
+  mirrors: true,
+  draw(ctx, phase, p, cue, opts) {
+    const mirror = !!(opts && opts.mirror);
     const pts = points(Math.round(p.n), p.h);
-    const m = rotMatrix(axisFrom(0), phase * TAU);
-    const rot = rotateAll(pts, m, cache.buf);
+    const m = spinM(0, 'xy', phase * TAU, mirror);
+    const rot = rotateAll(pts, m, cache.buf, mirror);
     drawDots(ctx, rot, cue, { radius: p.r, fill: 0.40 });
   }
 };

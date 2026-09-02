@@ -1,5 +1,5 @@
 import { TAU, drawCloud } from '../lib/render.js';
-import { pose, tubePatches, fillCloud } from '../lib/cloud.js';
+import { pose, tubePatches, fillCloud, memo } from '../lib/cloud.js';
 import { adapt, palName, PALETTES } from '../lib/palette.js';
 
 // A banana, long axis vertical, turning about it: crescent, then a fat
@@ -81,11 +81,9 @@ function build(N, fat, ridges) {
   return fillCloud(parts, N, 0xba4a4a);
 }
 
-let cache = null;
+const cache = memo(4);
 function geom(N, fat, ridges) {
-  const key = N + '/' + fat + '/' + ridges;
-  if (!cache || cache.key !== key) cache = { key: key, cl: build(N, fat, ridges) };
-  return cache.cl;
+  return cache(N + '/' + fat + '/' + ridges, () => build(N, fat, ridges));
 }
 
 const COLORS = ['#cfae52', '#fdf0b8'];
@@ -94,6 +92,7 @@ export default {
   id: 'banana',
   name: 'banana',
   palette: 'dark',
+  mirrors: true,
   blurb: 'A banana standing on end and turning about its own long axis: crescent, then a straight bar ' +
          'when the curve goes edge-on, then a crescent the other way. Gold dots on the surface, and ' +
          'five ridge lines running the length of it.',

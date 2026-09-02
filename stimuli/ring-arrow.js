@@ -1,5 +1,5 @@
 import { TAU, drawCloud } from '../lib/render.js';
-import { pose, surfaceArea, fillCloud } from '../lib/cloud.js';
+import { pose, surfaceArea, fillCloud, memo } from '../lib/cloud.js';
 import { RAMP, adapt, palName, PALETTES } from '../lib/palette.js';
 
 // The loop everybody has already seen: a refresh arrow — a ribbon bent into
@@ -34,8 +34,10 @@ function build(p, N) {
   const th0 = t0 + bandArc;              // where the chevron starts
 
   // the ribbon runs in the x-z plane; the band's height is along y, which is
-  // the rotation axis, so the silhouette of the ring never changes.
-  const at = (a, y, r, out) => { out[0] = r * Math.cos(a); out[1] = y; out[2] = r * Math.sin(a); };
+  // the rotation axis, so the silhouette of the ring never changes. The angle
+  // is negated so the head leads clockwise seen from above, the way round the
+  // loop this is copied from goes.
+  const at = (a, y, r, out) => { out[0] = r * Math.cos(-a); out[1] = y; out[2] = r * Math.sin(-a); };
 
   const bandFace = (r) => surfaceArea((u, v, out) => at(t0 + u * bandArc, (v * 2 - 1) * hb, r, out), 120, 6);
   const bandRim = (sy) => surfaceArea((u, v, out) => at(t0 + u * bandArc, sy * hb, R + (v * 2 - 1) * th, out), 120, 3);
@@ -64,17 +66,16 @@ function build(p, N) {
   ], N, 0xa11c0f);
 }
 
-let cache = null;
+const cache = memo(4);
 function geom(p, N) {
-  const key = [p.arc, p.band, p.head, p.headArc, N].join('/');
-  if (!cache || cache.key !== key) cache = { key: key, cl: build(p, N) };
-  return cache.cl;
+  return cache([p.arc, p.band, p.head, p.headArc, N].join('/'), () => build(p, N));
 }
 
 export default {
   id: 'ring-arrow',
   name: 'ring arrow',
   palette: 'dark',
+  mirrors: true,
   blurb: 'A refresh arrow: a ribbon bent into three hundred degrees of a ring with a flat chevron head, ' +
          'turning about its own axis, which leans about twenty degrees towards you. Nothing is drawn but ' +
          'a few thousand identical dots scattered over its surface — the bright rims at the left and right ' +
@@ -83,12 +84,12 @@ export default {
            'Then decide the same head is coming towards you along the near side. The picture does not change.',
   controls: [
     { key: 'period', label: 'period', min: 3, max: 16, step: 0.5, def: 8, unit: 's' },
-    { key: 'tilt', label: 'tilt', min: 0, max: 40, step: 1, def: 16, unit: '°' },
+    { key: 'tilt', label: 'tilt', min: 0, max: 40, step: 1, def: 18, unit: '°' },
     { key: 'arc', label: 'arc', min: 200, max: 340, step: 5, def: 305, unit: '°' },
     { key: 'band', label: 'band', min: 0.14, max: 0.5, step: 0.01, def: 0.36 },
     { key: 'head', label: 'head', min: 0.3, max: 1.0, step: 0.02, def: 0.58 },
     { key: 'headArc', label: 'point', min: 25, max: 75, step: 1, def: 48, unit: '°' },
-    { key: 'dots', label: 'dots', min: 2000, max: 20000, step: 500, def: 8000 }
+    { key: 'dots', label: 'dots', min: 2000, max: 20000, step: 500, def: 10000 }
   ],
   draw(ctx, phase, p, cue, opts) {
     const detail = (opts && opts.detail) || 1;

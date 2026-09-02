@@ -90,8 +90,39 @@ Colouring by `z` would have been a real depth cue and would have ended the
 illusion. It is not used anywhere.
 
 Three palettes — `dark` (the default), `paper` (ink on off-white, used by the
-coil), `mono` (all colour thrown away, which is the honest control) — live in
-[`lib/palette.js`](lib/palette.js) and can be forced site-wide with `?p=mono`.
+coil and the silhouette), `mono` (all colour thrown away, which is the honest
+control) — live in [`lib/palette.js`](lib/palette.js). The app page has a
+palette switch and it rides in the URL as `?p=mono`.
+
+## The twins
+
+Under the canvas on the app page there are two small copies of the loop. The
+left one is the object as shown. The right one is the **depth-mirrored object
+turning the other way**: a different solid, a different rigid motion, built
+from its own pose matrix rather than copied from the left.
+
+At `cue = 0` those two canvases are identical, byte for byte, for every
+stimulus on the site — that is asserted in the Playwright pass by reading both
+canvases back and comparing every channel of every pixel. Push the cue up and
+they come apart, which is exactly what the cue is: the depth information the
+flat picture never had.
+
+Why it is exact rather than nearly exact: conjugating by the depth flip
+`D = diag(1, 1, -1)` turns a rotation about axis `k` by angle `a` into a
+rotation about `Dk` by `-a`. Take that seriously and build the twin from
+`Rx(-tilt)·Ry(-angle)` applied to the object with every `z` negated, and every
+sign that changes on the way to a screen `x` or `y` changes an even number of
+times. IEEE arithmetic gives exactly the same answer for a sum of exactly
+negated products, so the two floats are the same float.
+
+One honest exception to the *interpretation*, not the maths: the `coil` is
+chiral, so its depth-mirror is the opposite-handed spring rather than the same
+object. The picture still cannot tell the two readings apart; it just cannot
+tell you which of the two springs you are looking at either. Every other
+figurative object here is mirror-symmetric about its own vertical plane
+(`ring-arrow` is not, strictly — its head is at one end of the arc — but its
+mirror is the same ribbon read the other way round, which is the same object
+in every respect that shows).
 
 ## The set
 
@@ -104,7 +135,10 @@ easily they flip.
 | `chair` | A wooden chair, every member a chunky bar of white speckle. The mirror of a chair is still a chair facing the other way — recognisable objects are stickier, which is the point. |
 | `tetra` | Regular tetrahedron on the axis through its apex: coloured edges, a lattice of pale dots on each face, nothing filled. |
 | `banana` | A curved tapered tube on end, turning about its long axis: crescent, straight bar, crescent. |
-| `arrow` | Solid arrow, square shaft and pyramid head. An arrow is mirror-symmetric about its own vertical plane, so its depth-mirror is *the same arrow*. |
+| `pyramid` | Square pyramid on its side. Twice a turn it becomes a square with an X through it — the Necker figure, at the pose where the two readings are furthest apart. |
+| `orb` | A sphere of green dots, each smeared along its own screen velocity. The outline never changes; there is nothing to read but the flow. |
+| `coil` | Eight turns of a helix as a fat grainy stroke, black on paper. The one honest exception in the set: a helix is chiral, so its depth-mirror is the *opposite-handed* spring — see *The twins* above. |
+| `arrow` | A smooth arrow of revolution, round shaft and cone head, in dots. An arrow of revolution is mirror-symmetric about its own vertical plane, so its depth-mirror is *the same arrow*. |
 | `sphere` | Random dots uniform on a sphere (`y ~ U(−1,1)`, azimuth uniform). The lab classic. |
 | `cylinder` | Dots on a transparent cylinder — the Treue / Bradley standard. |
 | `cube` | Necker cube in motion, twelve equal edges, axis tilted ~20° so faces cross. |
@@ -206,15 +240,35 @@ Then add it to `stimuli/index.js`. Rules the rest of the site relies on:
    a cheaper mesh or a smaller cloud if yours is expensive.
 5. `opts.palette` may name a palette to force; `opts.mirror` asks for the
    depth-mirrored object turning the other way. Build the pose with
-   `pose(tilt, angle, mirror)` from `lib/cloud.js` and hand `mirror` on to the
-   drawing primitive, and the two come out pixel-identical for free.
+   `pose(tilt, angle, mirror)` from `lib/cloud.js` (or `spinM` from
+   `lib/render.js` for an axis given as a tilt) and hand `mirror` on to the
+   drawing primitive, and the two come out pixel-identical for free. Set
+   `mirrors: true` on the module once it does.
+6. Cache geometry with `memo()` from `lib/cloud.js`, not a single slot: the
+   app page draws the main canvas at full detail and both twins at reduced
+   detail in the same frame, and a one-entry cache would rebuild three times
+   a frame.
 
 ## Verifying
 
 ```sh
 python3 -m http.server 8731
-node pw/shots.js          # screenshots + loop-identity + console check
+node pw/verify.js         # loop identity, twin identity, draw cost, console
+node pw/twincheck.js      # reads both twin canvases back, byte for byte
+node pw/shots.js          # screenshots of every stimulus and every mode
 ```
+
+What the checks assert, for every stimulus:
+
+* the landing page and every app page log nothing to the console;
+* the frame at phase 0 is byte-identical to the frame at phase 1, at cue 0
+  and at cue 1 — the loop closes;
+* the twin canvases are byte-identical at cue 0 and genuinely different at
+  cue 0.6 — the ambiguity is exact, and the cue really does add information;
+* per-frame draw cost at cue 0 and cue 1 on a 1520x1094 canvas.
+
+The Playwright harness lives outside this repo, in
+`~/.scratch/shape-rotator/pw`.
 
 ## References
 

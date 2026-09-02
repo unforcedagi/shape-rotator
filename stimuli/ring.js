@@ -16,7 +16,12 @@ export default {
     { key: 'tilt', label: 'tilt', min: 10, max: 85, step: 1, def: 60, unit: '°' },
     { key: 'r', label: 'dot', min: 1, max: 5, step: 0.25, def: 2.5 }
   ],
-  draw(ctx, phase, p, cue) {
+  mirrors: true,
+  draw(ctx, phase, p, cue, opts) {
+    // the ring's rotation is a phase advance along its own circle, so its
+    // depth-mirrored twin turning the other way is just the same circle with z
+    // negated at the same phase
+    const mz = (opts && opts.mirror) ? -1 : 1;
     const n = Math.round(p.n);
     const t = p.tilt * Math.PI / 180;
     const st = Math.sin(t), ct = Math.cos(t);
@@ -25,7 +30,7 @@ export default {
       const a = (i / n + phase) * TAU;
       const ca = Math.cos(a), sa = Math.sin(a);
       // ring in the horizontal plane, then tipped about the screen-x axis
-      buf[i] = [ca * 0.96, -sa * st * 0.96, sa * ct * 0.96];
+      buf[i] = [ca * 0.96, -sa * st * 0.96, mz * sa * ct * 0.96];
     }
     drawDots(ctx, buf, cue, { radius: p.r, fill: 0.42 });
   }

@@ -1,4 +1,5 @@
-import { TAU, axisFrom, rotMatrix, applyM, drawMesh } from '../lib/render.js';
+import { TAU, spinM, drawMesh } from '../lib/render.js';
+import { pal } from '../lib/palette.js';
 
 // A lathe-turned vase with one asymmetric spout. The spinning-dancer principle:
 // a filled silhouette carries no interior detail at all, so the only thing the
@@ -119,8 +120,14 @@ function full(detail) {   // body + spout, for the shaded cue > 0 path
   return cacheFull.get(detail);
 }
 
-function place(M, m) {
-  for (let i = 0; i < M.verts.length; i++) applyM(m, M.verts[i], M.buf[i]);
+function place(M, m, mirror) {
+  const sz = mirror ? -1 : 1;
+  for (let i = 0; i < M.verts.length; i++) {
+    const v = M.verts[i], b = M.buf[i], z = v[2] * sz;
+    b[0] = m[0] * v[0] + m[1] * v[1] + m[2] * z;
+    b[1] = m[3] * v[0] + m[4] * v[1] + m[5] * z;
+    b[2] = m[6] * v[0] + m[7] * v[1] + m[8] * z;
+  }
   for (let i = 0; i < M.faces.length; i++) {
     const f = M.faces[i], o = M.out[i];
     for (let k = 0; k < f.length; k++) o[k] = M.buf[f[k]];
@@ -136,16 +143,19 @@ export default {
          'away every depth cue there is; all that is left is an outline that swells and narrows.',
   tryThis: 'Wait for the spout to point straight at you, at its widest. In that instant decide it is ' +
            'coming towards you, or going away — that single choice sets the direction for the rest of the turn.',
-  // a silhouette needs to be the dark thing, so this one brings its own paper
-  bg: '#e9e9f1',
+  // a silhouette needs to be the dark thing, so this one is on paper
+  palette: 'paper',
+  mirrors: true,
   controls: [
     { key: 'period', label: 'period', min: 3, max: 14, step: 0.5, def: 8, unit: 's' }
   ],
   draw(ctx, phase, p, cue, opts) {
     const detail = (opts && opts.detail) || 1;
-    const m = rotMatrix(axisFrom(0), phase * TAU);
-    const o = { fill: 0.44, color: '#0b0b10', lit: '#9299ab' };
-    if (cue <= 0) drawMesh(ctx, [BODY].concat(place(flat(detail), m)), 0, o);
-    else drawMesh(ctx, place(full(detail), m), cue, o);
+    const mirror = !!(opts && opts.mirror);
+    const m = spinM(0, 'xy', phase * TAU, mirror);
+    const P = pal(this, opts);
+    const o = { fill: 0.44, color: P.ink, lit: P.dim };
+    if (cue <= 0) drawMesh(ctx, [BODY].concat(place(flat(detail), m, mirror)), 0, o);
+    else drawMesh(ctx, place(full(detail), m, mirror), cue, o);
   }
 };

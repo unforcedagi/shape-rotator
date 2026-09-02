@@ -1,4 +1,4 @@
-import { TAU, axisFrom, rotMatrix, rotateAll, drawWire } from '../lib/render.js';
+import { TAU, spinM, rotateAll, drawWire } from '../lib/render.js';
 
 // The "seam of a tennis ball" curve:
 //   x = A cos u + B cos 3u,  y = A sin u - B sin 3u,  z = C sin 2u
@@ -45,10 +45,12 @@ export default {
     { key: 'c', label: 'depth', min: 0.2, max: 1.0, step: 0.05, def: 0.62 },
     { key: 'w', label: 'stroke', min: 1, max: 6, step: 0.25, def: 2.5 }
   ],
-  draw(ctx, phase, p, cue) {
+  mirrors: true,
+  draw(ctx, phase, p, cue, opts) {
+    const mirror = !!(opts && opts.mirror);
     const pts = curve(p.b, p.c);
-    const m = rotMatrix(axisFrom(p.tilt, 'yz'), phase * TAU);
-    const rot = rotateAll(pts, m, cache.buf);
+    const m = spinM(p.tilt, 'yz', phase * TAU, mirror);
+    const rot = rotateAll(pts, m, cache.buf, mirror);
     drawWire(ctx, rot, cue, { width: p.w, closed: true, fill: 0.44 });
   }
 };

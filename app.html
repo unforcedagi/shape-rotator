@@ -39,6 +39,16 @@
   #halves div { flex: 1; display: flex; align-items: flex-end; justify-content: center;
     padding-bottom: 6px; font-size: 11px; color: #3d4756; opacity: 0.9; }
   canvas#strip { display: block; width: 100%; height: 26px; border-radius: 5px; margin-top: 6px; }
+  /* the twins: the same loop drawn two different ways */
+  #twins { width: 760px; max-width: 100%; }
+  #twins .pair { display: flex; gap: 10px; }
+  #twins figure { margin: 0; flex: 1; min-width: 0; }
+  #twins canvas { display: block; width: 100%; border-radius: 7px; border: 1px solid #1b1f2a; }
+  #twins figcaption { font-size: 10.5px; color: #6e7787; margin-top: 4px; line-height: 1.45; }
+  #twincap { font-size: 11.5px; color: #8f98a6; margin: 8px 0 0; line-height: 1.6;
+    border-left: 2px solid #2a4a63; padding: 4px 10px; border-radius: 0 5px 5px 0;
+    background: rgba(90,190,230,0.045); }
+  #twincap b { color: #dee7f2; }
   #striplab { display: flex; justify-content: space-between; font-size: 10px;
     color: #5d6675; margin-top: 3px; }
   /* controls */
@@ -103,6 +113,20 @@
     <div id="striplab"><span>90 s ago</span><span id="stripmid">what you reported seeing</span><span>now</span></div>
   </div>
 
+  <div id="twins">
+    <div class="pair">
+      <figure><canvas id="twa" width="460" height="330"></canvas>
+        <figcaption>as shown</figcaption></figure>
+      <figure><canvas id="twb" width="460" height="330"></canvas>
+        <figcaption>mirrored in depth, turning the other way</figcaption></figure>
+    </div>
+    <p id="twincap">Two different objects, two different rotations, drawn independently —
+      and at <b>cue 0</b> these two canvases are identical, pixel for pixel, forever. That is
+      the whole illusion, and it is an exact algebraic fact rather than a good approximation.
+      Push the cue up and watch them come apart: the cue is the depth information the flat
+      picture never had.</p>
+  </div>
+
   <div class="row">
     <span class="grp"><span class="glabel">mode</span>
       <button data-mode="free">free</button>
@@ -113,6 +137,12 @@
       <input id="cue" type="range" min="0" max="1" step="0.01" value="0">
       <span class="num" id="cuev">0.00</span>
       <button id="fade">fade 1→0</button>
+    </span>
+    <span class="grp"><span class="glabel">palette</span>
+      <button data-pal="">auto</button>
+      <button data-pal="dark">dark</button>
+      <button data-pal="paper">paper</button>
+      <button data-pal="mono">mono</button>
     </span>
     <span class="grp">
       <button id="play">pause</button>
@@ -156,6 +186,8 @@ document.getElementById('techlist').innerHTML = TECHNIQUES.map(t => '<li>' + t +
 
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const strip = document.getElementById('strip'), sctx = strip.getContext('2d');
+const twa = document.getElementById('twa'), twactx = twa.getContext('2d');
+const twb = document.getElementById('twb'), twbctx = twb.getContext('2d');
 const banner = document.getElementById('banner');
 const readout = document.getElementById('readout');
 const notice = document.getElementById('notice');
@@ -188,6 +220,17 @@ function opts(extra) {
 const free = createFree(() => renderReadout());
 let drill = createDrill(10, () => { renderReadout(); });
 const feed = createFeed(STIMULI.map(s => s.id), 15000, id => { setStim(id, true); });
+
+const TWINS = [{ g: twactx, mirror: false }, { g: twbctx, mirror: true }];
+
+function setPalette(v) {
+  paletteOverride = v || null;
+  for (const b of document.querySelectorAll('[data-pal]')) {
+    b.classList.toggle('on', (b.dataset.pal || '') === (paletteOverride || ''));
+  }
+  syncUrl();
+}
+for (const b of document.querySelectorAll('[data-pal]')) b.onclick = () => setPalette(b.dataset.pal);
 
 function clockNow(now) { return playing ? clockAcc + (now - clockBase) : clockAcc; }
 function setPlaying(v, now) {
@@ -226,6 +269,7 @@ function syncUrl() {
   const u = new URL(location.href);
   u.searchParams.set('s', stim.id);
   u.searchParams.set('mode', mode);
+  if (paletteOverride) u.searchParams.set('p', paletteOverride); else u.searchParams.delete('p');
   history.replaceState(null, '', u);
 }
 
@@ -261,6 +305,7 @@ function setMode(m) {
   mode = m;
   for (const b of document.querySelectorAll('[data-mode]')) b.classList.toggle('on', b.dataset.mode === m);
   document.getElementById('stage2').style.display = m === 'drill' ? 'none' : '';
+  document.getElementById('twins').style.display = m === 'feed' ? 'none' : '';
   paramsRow.style.display = m === 'feed' ? 'none' : '';
   restartBtn.style.display = m === 'drill' ? '' : 'none';
   if (m === 'drill') { drill = createDrill(10, () => renderReadout()); banner.textContent = 'press start set'; }
@@ -360,6 +405,15 @@ function draw(now) {
   clear(ctx, bgOf(stim, opts()));
   stim.draw(ctx, phase, params, cue, opts());
 
+  // the twins. The right-hand one is the depth-mirrored object turning the
+  // other way — a genuinely different rigid motion of a genuinely different
+  // solid, built from its own pose matrix, not a flipped copy of the left. At
+  // cue 0 the two canvases agree to the byte; the Playwright pass asserts it.
+  for (const t of TWINS) {
+    clear(t.g, bgOf(stim, opts()));
+    stim.draw(t.g, phase, params, cue, opts({ detail: 0.55, mirror: t.mirror }));
+  }
+
   if (mode === 'free') {
     free.tick(now);
     free.drawStrip(sctx, now, 90000);
@@ -416,6 +470,7 @@ window.__sr = {
   setMode: m => setMode(m),
   setCue: v => { fadeFrom = null; cue = +v; cueEl.value = v; cuev.textContent = (+v).toFixed(2); },
   setParam: (k, v) => { params[k] = +v; buildParams(); },
+  setPalette: v => setPalette(v),
   freezeAt: p => { frozen = p; },
   unfreeze: () => { frozen = null; },
   ready: true
@@ -423,6 +478,7 @@ window.__sr = {
 
 // --- boot ------------------------------------------------------------------
 setStim(stim.id, true);
+setPalette(paletteOverride);
 setMode(mode);
 cueEl.value = cue; cuev.textContent = cue.toFixed(2);
 playBtn.textContent = playing ? 'pause' : 'play';

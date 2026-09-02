@@ -1,5 +1,5 @@
 import { TAU, drawCloud } from '../lib/render.js';
-import { pose, barPatches, panelPatch, fillCloud } from '../lib/cloud.js';
+import { pose, barPatches, panelPatch, fillCloud, memo } from '../lib/cloud.js';
 import { adapt, palName, PALETTES } from '../lib/palette.js';
 
 // A plain wooden chair, every member of it a chunky square-section bar drawn
@@ -49,11 +49,9 @@ function build(N, panels) {
   ], N, 0xc4a12b);
 }
 
-let cache = null;
+const cache = memo(4);
 function geom(N, panels) {
-  const key = N + '/' + panels;
-  if (!cache || cache.key !== key) cache = { key: key, cl: build(N, panels) };
-  return cache.cl;
+  return cache(N + '/' + panels, () => build(N, panels));
 }
 
 const COLORS = ['#f4f7fc', '#b07c4e'];
@@ -62,6 +60,7 @@ export default {
   id: 'chair',
   name: 'chair',
   palette: 'dark',
+  mirrors: true,
   blurb: 'A wooden chair with every frame member drawn as a chunky bar of white speckle, and the seat ' +
          'and back filled with sparse dim dots. No occlusion: the far legs come through the near ones, ' +
          'so nothing in the picture says which pair is in front.',

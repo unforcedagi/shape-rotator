@@ -1,4 +1,4 @@
-import { TAU, axisFrom, rotMatrix, applyM, drawSegments } from '../lib/render.js';
+import { TAU, spinM, rotateAll, drawSegments } from '../lib/render.js';
 
 const V = [];
 for (let i = 0; i < 8; i++) {
@@ -21,9 +21,11 @@ export default {
     { key: 'tilt', label: 'tilt', min: 0, max: 45, step: 1, def: 20, unit: '°' },
     { key: 'w', label: 'stroke', min: 1, max: 5, step: 0.25, def: 2 }
   ],
-  draw(ctx, phase, p, cue) {
-    const m = rotMatrix(axisFrom(p.tilt, 'xy'), phase * TAU);
-    for (let i = 0; i < 8; i++) applyM(m, V[i], buf[i]);
+  mirrors: true,
+  draw(ctx, phase, p, cue, opts) {
+    const mirror = !!(opts && opts.mirror);
+    const m = spinM(p.tilt, 'xy', phase * TAU, mirror);
+    rotateAll(V, m, buf, mirror);
     for (let i = 0; i < E.length; i++) { segs[i][0] = buf[E[i][0]]; segs[i][1] = buf[E[i][1]]; }
     drawSegments(ctx, segs, cue, { width: p.w, fill: 0.42 });
   }

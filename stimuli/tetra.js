@@ -1,5 +1,5 @@
 import { TAU, drawCloud, drawEdges } from '../lib/render.js';
-import { pose, cloud, wire } from '../lib/cloud.js';
+import { pose, cloud, wire, memo } from '../lib/cloud.js';
 import { adapt, palName, PALETTES } from '../lib/palette.js';
 
 // A regular tetrahedron standing on its base, turning about the axis through
@@ -93,16 +93,14 @@ function build(rows) {
   return { w: w, cl: cl, edgeColors: edgeColors };
 }
 
-let cache = null;
-function geom(rows) {
-  if (!cache || cache.rows !== rows) cache = { rows: rows, g: build(rows) };
-  return cache.g;
-}
+const cache = memo(4);
+function geom(rows) { return cache(String(rows), () => build(rows)); }
 
 export default {
   id: 'tetra',
   name: 'tetra',
   palette: 'dark',
+  mirrors: true,
   blurb: 'A regular tetrahedron turning about the axis through its apex: thin edges coloured by the ' +
          'corners they join, and a regular lattice of pale dots on each face. Nothing is filled and ' +
          'nothing is hidden, so the far face and the near face are drawn exactly alike.',

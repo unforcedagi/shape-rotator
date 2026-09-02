@@ -2,6 +2,9 @@ import ringArrow from './ring-arrow.js';
 import chair from './chair.js';
 import tetra from './tetra.js';
 import banana from './banana.js';
+import pyramid from './pyramid.js';
+import orb from './orb.js';
+import coil from './coil.js';
 import arrow from './arrow.js';
 import sphere from './sphere.js';
 import cylinder from './cylinder.js';
@@ -14,7 +17,7 @@ import dualAxis from './dual-axis.js';
 // The figurative set first — dot clouds, in the style of the loops that go
 // round on the timeline, with the ring arrow (the one everybody has seen) at
 // the front — then the seven laboratory stimuli, easiest-to-flip to hardest.
-export const FIGURATIVE = [ringArrow, chair, tetra, banana, arrow];
+export const FIGURATIVE = [ringArrow, chair, tetra, banana, pyramid, orb, coil, arrow];
 export const LAB = [sphere, cylinder, cube, lissajous, ring, silhouette, dualAxis];
 export const STIMULI = FIGURATIVE.concat(LAB);
 

@@ -1,4 +1,4 @@
-import { TAU, axisFrom, rotMatrix, rotateAll, drawWire } from '../lib/render.js';
+import { TAU, spinM, rotateAll, drawWire } from '../lib/render.js';
 
 const N = 420;
 let cache = null;
@@ -29,10 +29,12 @@ export default {
     { key: 'c', label: 'c', min: 1, max: 5, step: 1, def: 4 },
     { key: 'w', label: 'stroke', min: 1, max: 5, step: 0.25, def: 2 }
   ],
-  draw(ctx, phase, p, cue) {
+  mirrors: true,
+  draw(ctx, phase, p, cue, opts) {
+    const mirror = !!(opts && opts.mirror);
     const pts = curve(Math.round(p.a), Math.round(p.b), Math.round(p.c), Math.PI / 4);
-    const m = rotMatrix(axisFrom(0), phase * TAU);
-    const rot = rotateAll(pts, m, cache.buf);
+    const m = spinM(0, 'xy', phase * TAU, mirror);
+    const rot = rotateAll(pts, m, cache.buf, mirror);
     drawWire(ctx, rot, cue, { width: p.w, closed: true, fill: 0.42 });
   }
 };
