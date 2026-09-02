@@ -90,8 +90,15 @@ canvas#c { display: block; width: 100%; height: 100%; background: #000; }
 #banner.count { font-size: clamp(56px, 11vw, 110px); line-height: 1; font-weight: 200;
   color: var(--fg); opacity: .85; }
 #banner.chip { align-items: flex-start; justify-content: flex-start; }
-#banner.chip span { font-size: 12px; color: var(--fg-2); background: rgba(7,8,12,.6);
-  border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; backdrop-filter: blur(8px); }
+#banner.chip span, #banner.msg span { font-size: 12.5px; color: var(--fg-2);
+  background: rgba(7,8,12,.62); border: 1px solid var(--line); border-radius: 999px;
+  padding: 8px 15px; backdrop-filter: blur(8px); }
+/* the loops on a light ground need the overlay inverted */
+#stage.paper #banner.chip span, #stage.paper #banner.msg span {
+  color: #23211a; background: rgba(244,241,232,.72); border-color: rgba(0,0,0,.14); }
+#stage.paper #banner.count { color: #17150f; }
+#stage.paper #banner.big { color: #8a6412; }
+#stage.paper #halves div { color: rgba(0,0,0,.22); }
 #flash { position: absolute; inset: 0; pointer-events: none; opacity: 0;
   background: radial-gradient(90% 70% at 50% 50%, rgba(232,194,106,.22), rgba(232,194,106,0) 70%); }
 #flash.go { animation: flash 320ms ease-out; }
@@ -369,7 +376,7 @@ input[type=range] { width: 132px; accent-color: var(--accent); height: 28px; cur
 <script type="module">
 import { STIMULI, FIGURATIVE, LAB, get, defaults, DEFAULT_ID } from './stimuli/index.js';
 import { clear } from './lib/render.js';
-import { bgOf } from './lib/palette.js';
+import { bgOf, palName } from './lib/palette.js';
 import { createFree, createDrill, createFeed, LEFT, RIGHT, COL, ARROW } from './lib/modes.js';
 import * as stats from './lib/stats.js';
 
@@ -395,6 +402,15 @@ const ansL = document.getElementById('ansL'), ansR = document.getElementById('an
 const stripWrap = document.getElementById('stripwrap');
 const flash = document.getElementById('flash');
 const summary = document.getElementById('summary');
+const stage = document.getElementById('stage');
+// one short line, in a pill that reads on black and on paper alike
+function setMsg(text) {
+  if (banner.className !== 'msg' || banner.textContent !== text) {
+    banner.className = 'msg';
+    banner.innerHTML = '<span></span>';
+    banner.firstChild.textContent = text;
+  }
+}
 
 const PHASE0 = 0.13;   // a paused page should not sit on a flat, degenerate pose
 const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -688,6 +704,8 @@ function draw(now) {
     stim.draw(t.g, phase, params, cue, opts({ detail: 0.55, mirror: t.mirror }));
   }
 
+  stage.classList.toggle('paper', palName(stim, opts()) === 'paper');
+
   if (mode === 'free') {
     free.tick(now);
     free.drawStrip(sctx, now, 90000);
@@ -697,14 +715,14 @@ function draw(now) {
       banner.className = 'count';
       banner.textContent = String(Math.max(1, drill.countdown));
     } else if (drill.phase === 'gap') {
-      banner.className = ''; banner.textContent = 'hold whatever you see …';
+      setMsg('hold whatever you see …');
     } else if (drill.phase === 'target') {
       banner.className = 'big';
       banner.textContent = ARROW[drill.target];
     } else if (drill.phase === 'done') {
       banner.className = ''; banner.textContent = '';
     } else {
-      banner.className = ''; banner.textContent = 'press start set';
+      setMsg('press start set');
     }
     restartBtn.classList.toggle('on', drill.phase === 'idle' || drill.phase === 'done');
     if (drill.phase !== lastDrillPhase) {
