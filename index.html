@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reverse Reverse — the shape rotator test</title>
+<meta name="description" content="Nine looping bistable rotation illusions and a place to practise steering which way you see them turn. Can you see it both ways?">
+<style>
+  html, body { margin: 0; min-height: 100%; background: #0b0b10; color: #c2cbd8;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    -webkit-text-size-adjust: 100%; }
+  #wrap { max-width: 760px; margin: 0 auto; padding: 44px 18px 60px; }
+  h1 { font-size: 24px; font-weight: 600; margin: 0 0 4px; color: #dee7f2;
+    letter-spacing: 0.01em; }
+  p.sub { color: #7f8a9b; font-size: 12.5px; margin: 0 0 18px; line-height: 1.6; }
+  p.lede { color: #9aa5b4; font-size: 13px; line-height: 1.75; margin: 0 0 16px; }
+  #try { font-size: 12px; color: #aab5c4; margin: 0 0 24px; line-height: 1.7;
+    border-left: 2px solid #2a4a63; background: rgba(90,190,230,0.055);
+    padding: 9px 12px; border-radius: 0 6px 6px 0; }
+  #try .lead { color: #5d7488; text-transform: uppercase; letter-spacing: 0.09em;
+    font-size: 10px; margin-right: 5px; }
+  #notice { font-size: 12px; color: #f0b878; border: 1px solid #4a3a20;
+    background: rgba(240,184,120,0.06); border-radius: 8px; padding: 10px 12px;
+    line-height: 1.6; margin: 0 0 20px; display: none; }
+  h2 { font-size: 11px; letter-spacing: 0.11em; text-transform: uppercase;
+    color: #616b7a; margin: 34px 0 12px; font-weight: 600; }
+  #grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  a.card { display: block; background: #12121a; border: 1px solid #222233;
+    border-radius: 9px; padding: 10px; text-decoration: none; color: inherit; }
+  a.card:hover { border-color: #33415a; background: #14141f; }
+  a.card canvas { display: block; width: 100%; border-radius: 6px; background: #0b0b10; }
+  a.card .nm { color: #8ab4f8; font-size: 13.5px; margin-top: 8px; display: flex;
+    justify-content: space-between; align-items: baseline; }
+  a.card .nm em { font-style: normal; color: #5d6675; font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase; }
+  a.card .ds { color: #7f8a9b; font-size: 11.5px; margin-top: 5px; line-height: 1.55; }
+  .modes { display: flex; gap: 10px; flex-wrap: wrap; }
+  .modes a { flex: 1 1 200px; background: #111721; border: 1px solid #27313f;
+    border-radius: 8px; padding: 11px 13px; text-decoration: none; color: #c2cbd8; }
+  .modes a:hover { background: #1a2230; }
+  .modes a b { color: #8ab4f8; font-weight: 600; display: block; font-size: 13px; }
+  .modes a span { color: #7f8a9b; font-size: 11.5px; line-height: 1.55;
+    display: block; margin-top: 4px; }
+  ul.tech { list-style: none; padding: 0; margin: 0; }
+  ul.tech li { color: #8f98a6; font-size: 12.5px; line-height: 1.7; margin: 0 0 9px;
+    padding-left: 16px; position: relative; }
+  ul.tech li:before { content: "·"; position: absolute; left: 4px; color: #46a6c4; }
+  ul.tech b { color: #ccd6e2; font-weight: 600; }
+  details { font-size: 12.5px; line-height: 1.75; color: #8f98a6; margin-top: 8px; }
+  details summary { cursor: pointer; color: #767f8d; font-size: 11.5px; }
+  details p { margin: 13px 0; }
+  details strong { color: #ccd6e2; }
+  ol.refs { color: #8f98a6; font-size: 12px; line-height: 1.8; padding-left: 20px; }
+  a { color: #5fb2d4; }
+  footer { margin-top: 34px; font-size: 11px; color: #666f7c; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>Reverse Reverse</h1>
+  <p class="sub">the shape rotator test &mdash; can you see it both ways?</p>
+
+  <p class="lede">Which way is the arrow spinning? Both. Nine looping animations, each of them
+    honestly ambiguous: the picture on the screen is equally consistent with the object turning one
+    way and with it turning the other, and nothing in the image can settle it. Your visual system
+    settles it anyway, silently, and then changes its mind. This site is a place to stop being a
+    passenger to that and get some deliberate control over it — with a cue dial that shows you the
+    true direction, and a drill that times how fast you can flip on command.</p>
+
+  <div id="notice"></div>
+
+  <p id="try"><span class="lead">try this first</span> open the <a href="app.html?s=arrow&amp;mode=free">arrow</a>
+    and just watch for twenty seconds. Somewhere in there it will reverse on its own and you will feel
+    it happen. Now drag <b>cue</b> to 1 — the near face lights up, and the real direction is suddenly
+    obvious. Press <b>fade</b>, and try to keep seeing that direction as the help drains away over
+    eight seconds. Then try to lose it on purpose. When you can do that, go and do it on
+    <a href="app.html?s=sphere&amp;mode=free">sphere</a>, which is the version the labs use.</p>
+
+  <h2>the nine</h2>
+  <div id="grid"></div>
+
+  <h2>modes</h2>
+  <div class="modes">
+    <a href="app.html?s=arrow&amp;mode=free"><b>free</b><span>Watch. Press ← / → (or tap a half of the
+      canvas) whenever what you see changes; a strip under the canvas draws your percept over time,
+      with flip count and mean hold.</span></a>
+    <a href="app.html?s=arrow&amp;mode=drill"><b>drill</b><span>A big arrow appears. Flip your percept
+      to match it, then press that key. Ten rounds, median latency, misses, and a history kept in this
+      browser.</span></a>
+    <a href="app.html?s=arrow&amp;mode=feed"><b>feed</b><span>All nine, fifteen seconds each, no
+      controls. Like scrolling a timeline of these things, except the arrow keys still record what
+      you saw.</span></a>
+  </div>
+
+  <h2>techniques</h2>
+  <ul class="tech">
+    <li><b>Fixate one dot and decide it is in front.</b> Not "wait until it looks like it is" — decide.
+      Attending to a single element and assigning it a depth is the single most reliable lever anyone
+      has found, and it is the one the lab literature actually measures
+      (<a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0037734">Pastukhov,
+      Vonau, Stonkute &amp; Braun 2012</a>).</li>
+    <li><b>Blink.</b> A hard blink, or a second with your eyes shut, wipes the current interpretation
+      and the reassembly is a coin flip you can lean on.</li>
+    <li><b>Look slightly away.</b> In peripheral vision the motion evidence is far weaker, so the
+      percept is cheaper to overturn; catch the flip out of the corner of your eye, then look back.</li>
+    <li><b>Move the camera, not the object.</b> Imagine you are looking down on it from above; then
+      imagine you are underneath looking up. The rotation direction follows the imagined viewpoint.</li>
+    <li><b>Cover half.</b> Put a hand over the top half of the canvas, settle on a direction from the
+      bottom half alone, then uncover. Then do it the other way round.</li>
+    <li><b>Slow it down.</b> Longer periods are more ambiguous and much easier to steer; speed
+      stabilises the percept, which is why the drill gets harder as you shorten the period.</li>
+    <li><b>Use the cue, then fade it.</b> Turn cue up until the true direction is obvious, then press
+      fade and hold what you saw for the eight seconds it takes the help to disappear. This is the
+      whole training method, and it is why the dial exists.</li>
+  </ul>
+
+  <h2>why this works</h2>
+  <details>
+    <summary>the essay — philosophy · technique · aesthetics · honest weaknesses</summary>
+    <p><strong>Philosophy — the image genuinely does not know.</strong> Take a cloud of dots on the
+      surface of a sphere, turn it about the vertical axis, and draw it with an orthographic camera:
+      no perspective, every dot the same size and the same brightness whatever its depth, nothing
+      hidden behind anything. Now mirror the whole thing in depth, so every point at <em>z</em> moves
+      to <em>−z</em>, and turn it the other way. The two produce <em>pixel-identical</em> images,
+      forever, because the projection throws away the coordinate the two versions differ in. This is
+      not an artist's trick or a near-miss; it is an exact algebraic degeneracy. What you see when you
+      look at it is therefore not a reading of the evidence — the evidence is silent — it is a
+      construction your visual system commits to and then defends. Wallach and O'Connell called the
+      general phenomenon the <strong>kinetic depth effect</strong> in 1953: a flat moving shadow
+      spontaneously acquiring a solid three-dimensional form. The reversals are the interesting part.
+      A perceptual system that had merely computed the answer would not keep changing it. The flips
+      look much more like a system that has to pick a winner among equals, gets bored of its winner,
+      and picks again — which is roughly what the bistable-perception literature has converged on, and
+      which is why watching yourself do it feels like catching your own mind mid-sentence.</p>
+    <p><strong>Technique — what it costs to keep the image honest.</strong> Almost every piece of
+      graphics code you would write by reflex is a depth cue, and any one of them silently ends the
+      illusion. Perspective divide: a cue. Scaling dots with distance: a cue. Fog, shading, occlusion,
+      z-sorting with opaque fills, a drop shadow, antialiasing that happens to differ front and back:
+      all cues. So the renderer here is deliberately impoverished. Projection is orthographic —
+      <code>(x, y, z) → (x, y)</code>, no divide. At <code>cue = 0</code> every dot in a cloud is
+      emitted into a <em>single</em> path and filled once, at one radius and one alpha, so there is no
+      per-dot state that could leak depth; a wire is stroked as one path at one width; the silhouette
+      is the nonzero-winding union of every triangle in the mesh filled flat, which is why it has no
+      interior line at all. The mesh is not depth-sorted at <code>cue = 0</code> because with a single
+      flat colour the sort order is unobservable. Every loop is animated from
+      <code>phase = (t mod period) / period</code> and never from an accumulated delta, so the frame at
+      phase 0 is bit-identical to the frame at phase 1 and a recording of one period loops without a
+      seam. And the cue dial is the same code path with the terms switched on:
+      <code>scale = 1/(1 − cue·k·z)</code> for perspective, radius <code>× (1 + cue·z·k)</code> for
+      size, alpha falling off with depth, lambert shading mixed in by <code>cue</code> for the
+      silhouette. At <code>cue = 0</code> each of those expressions is exactly its identity, which is
+      the property that makes the claim checkable rather than aspirational.</p>
+    <p><strong>Aesthetics — a training instrument, not a poster.</strong> The temptation with these
+      shapes is to make them beautiful, and beauty here means texture, and texture means cues. So the
+      palette is one colour of dot on one colour of ground, and the only chromatic decisions in the
+      whole site are the two percept colours — cyan for leftward, amber for rightward — used in the
+      timeline strip and on the drill's target arrow so that "what I saw" and "what I was asked for"
+      are the same two colours everywhere. The timeline strip is the piece that changed how the thing
+      feels to use: once your reported percept is drawn as a band of colour over ninety seconds, you
+      stop experiencing flips as events and start seeing your own bistability as a texture, with a
+      characteristic dwell time that visibly shortens as you get better at forcing it. The silhouette
+      is the one stimulus that gets its own paper-white ground, because a silhouette has to be the
+      dark thing; that is the whole point of a silhouette, and it is the oldest of these illusions in
+      popular form — Nobuyuki Kayahara's spinning dancer, 2003. The arrow and the chair are the same
+      construction with the paper the other way up: a flat light fill on the dark ground, no outline
+      and no interior edge, so all you are given is a shape that widens and narrows.</p>
+    <p><strong>Honest weaknesses.</strong> The nine are not equally good, and the page order is the
+      honest order. The arrow is first because it is the loop that went round this week and because it
+      is the cleanest case in the set: an arrow is mirror-symmetric about its own vertical plane, so
+      its depth-mirror is <em>the same arrow</em>, and the two readings are the same picture rather
+      than two theories about a picture. The chair is that trick applied to an object you have
+      opinions about, and it is noticeably stickier for exactly that reason.
+      Sphere and cylinder are the lab standards and they flip freely for almost
+      everyone. The cube is a Necker cube in motion and flips readily but the flip is as much a
+      figural reversal as a motion reversal, which is a slightly different phenomenon wearing the same
+      coat. The ring is the crispest of the lot for some people and stubborn for others, because
+      thirty-two dots on one ellipse is very little evidence and the percept can lock. The silhouette
+      depends heavily on the shape: this one is a lathe-turned vessel with a spout, which reverses
+      well when the spout is near the edges of its sweep and rather less well when it is pointing
+      straight at you. The last one is the honest failure. It is named <code>dual-axis</code> after
+      Frank Force's 2019 Best Illusion of the Year, in which a single loop reads as spinning about a
+      vertical axis <em>and</em> about a horizontal one; what is shipped here is a tennis-ball-seam
+      curve turning about an axis that leans out of the screen, so its two readings are "leaning
+      towards me" and "leaning away" — a real second axis, but not the vertical-versus-horizontal
+      read that makes Force's version famous. The README says why the obvious constructions do not
+      get there. Finally: none of this measures your percept. It records the key you pressed. Every
+      number on the site is a number about your reporting, which lags the flip by a reaction time and
+      can be wrong on purpose, and there is no way around that in a browser.</p>
+  </details>
+
+  <h2>references</h2>
+  <ol class="refs">
+    <li>Wallach, H. &amp; O'Connell, D. N. (1953). <em>The kinetic depth effect.</em> Journal of
+      Experimental Psychology 45(4), 205–217 — the founding demonstration that a moving flat shadow is
+      seen as a solid.</li>
+    <li>Kayahara, N. (2003). <em>The spinning dancer</em> — the silhouette version that made this class
+      of illusion a mass phenomenon.</li>
+    <li>Force, F. (2019). <em>Dual Axis Illusion</em>, Best Illusion of the Year Contest —
+      <a href="https://illusionoftheyear.com/2019/12/dual-axis-illusion/">illusionoftheyear.com</a>.</li>
+    <li>Bach, M. <em>Structure-from-motion / kinetic depth effect</em> —
+      <a href="https://michaelbach.de/ot/mot-sfm/">michaelbach.de/ot/mot-sfm/</a>, the reference
+      implementation everyone checks their version against.</li>
+    <li>Pastukhov, A., Vonau, V., Stonkute, S. &amp; Braun, J. (2012). <em>Spatial and temporal
+      attention revealed by microsaccades / The role of attention in ambiguous reversals of
+      structure-from-motion.</em> PLOS ONE 7(6): e37734 —
+      <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0037734">journals.plos.org</a>.</li>
+    <li>Treue, S., Husain, M. &amp; Andersen, R. A. (1991). <em>Human perception of structure from
+      motion.</em> Vision Research 31(1), 59–75 — the transparent-cylinder stimulus used here.</li>
+  </ol>
+
+  <footer>no analytics, no accounts, no network calls · stats live in this browser only ·
+    <a href="https://github.com/unforcedagi/shape-rotator">source</a> ·
+    <a href="https://unforcedagi.github.io/sketches/">more sketches</a></footer>
+</div>
+
+<script type="module">
+import { STIMULI, defaults } from './stimuli/index.js';
+import { clear } from './lib/render.js';
+
+const HINT = {
+  arrow: 'start here', chair: 'familiar', sphere: 'the lab classic', cylinder: 'easy',
+  cube: 'easy', lissajous: 'medium', ring: 'medium', silhouette: 'hard', 'dual-axis': 'hardest'
+};
+
+const PHASE0 = 0.13;   // never park the previews on a flat, degenerate pose
+const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let enabled = !reduced;      // does the visitor want motion at all
+let playing = enabled;       // is the loop currently running
+
+const grid = document.getElementById('grid');
+const cells = [];
+for (const s of STIMULI) {
+  const a = document.createElement('a');
+  a.className = 'card';
+  a.href = 'app.html?s=' + s.id + '&mode=free';
+  const cv = document.createElement('canvas');
+  cv.width = 400; cv.height = 300;
+  const nm = document.createElement('div');
+  nm.className = 'nm';
+  nm.innerHTML = '<span>' + s.name + '</span><em>' + HINT[s.id] + '</em>';
+  const ds = document.createElement('div');
+  ds.className = 'ds';
+  // one or two sentences of the blurb, whichever gets past ~70 characters
+  const sent = s.blurb.split('. ');
+  let d = sent[0] + '.';
+  if (d.length < 74 && sent[1]) d += ' ' + sent[1] + (sent.length > 2 ? '.' : '');
+  ds.textContent = d;
+  a.append(cv, nm, ds);
+  grid.appendChild(a);
+  cells.push({ s: s, cv: cv, ctx: cv.getContext('2d'), p: defaults(s) });
+}
+
+function resize() {
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  for (const c of cells) {
+    const w = c.cv.clientWidth || 200;
+    const h = Math.round(w * 0.72);
+    c.cv.style.height = h + 'px';
+    c.cv.width = Math.round(w * dpr);
+    c.cv.height = Math.round(h * dpr);
+  }
+  frame(performance.now());
+}
+window.addEventListener('resize', resize);
+
+let t0 = performance.now(), acc = 0;
+function frame(now) {
+  const t = playing ? acc + (now - t0) : acc;
+  for (const c of cells) {
+    const period = c.p.period || 6;
+    const phase = (t / 1000 / period + PHASE0) % 1;
+    clear(c.ctx, c.s.bg || '#0b0b10');
+    // previews run at reduced mesh detail; dots/wires are cheap enough as is
+    c.s.draw(c.ctx, phase, c.p, 0, { detail: 0.45 });
+  }
+}
+function loop(now) { frame(now); if (playing) raf = requestAnimationFrame(loop); }
+let raf = 0;
+
+const notice = document.getElementById('notice');
+if (reduced) {
+  notice.style.display = 'block';
+  notice.innerHTML = 'This site <b>is</b> motion — every illusion here is a moving image and there is ' +
+    'no still version that does anything. Your system asks for reduced motion, so the previews are ' +
+    'frozen. <button id="go" style="margin-left:8px;background:#111721;color:#c2cbd8;border:1px solid ' +
+    '#27313f;border-radius:6px;padding:5px 11px;font:inherit;font-size:12px;cursor:pointer">play anyway</button>';
+  document.getElementById('go').onclick = () => {
+    notice.style.display = 'none';
+    enabled = true; playing = true; t0 = performance.now();
+    raf = requestAnimationFrame(loop);
+  };
+}
+
+resize();
+if (playing) raf = requestAnimationFrame(loop);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { if (playing) { acc += performance.now() - t0; playing = false; cancelAnimationFrame(raf); } }
+  else if (enabled && !playing) { playing = true; t0 = performance.now(); raf = requestAnimationFrame(loop); }
+});
+window.__sr = { ready: true, cells: cells.length };
+</script>
+</body>
+</html>

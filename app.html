@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reverse Reverse — practice</title>
+<meta name="description" content="Practice steering what you see: bistable structure-from-motion illusions with a training-wheels depth cue you can fade away.">
+<style>
+  html, body { margin: 0; min-height: 100%; background: #0b0b10; color: #c2cbd8;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    -webkit-text-size-adjust: 100%; }
+  #wrap { display: flex; flex-direction: column; align-items: center; gap: 10px;
+    padding: 14px 14px 40px; box-sizing: border-box; }
+  #head { width: 760px; max-width: 100%; }
+  #head h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.02em; margin: 0;
+    color: #dee7f2; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  #head h1 a { color: #5fb2d4; text-decoration: none; font-size: 12px; font-weight: 400; }
+  #tag { font-size: 12px; color: #7f8a9b; margin: 5px 0 0; line-height: 1.55; }
+  #try { font-size: 11.5px; color: #aab5c4; margin: 9px 0 0; line-height: 1.6;
+    border-left: 2px solid #2a4a63; background: rgba(90,190,230,0.055);
+    padding: 5px 10px; border-radius: 0 5px 5px 0; }
+  #try .lead { color: #5d7488; text-transform: uppercase; letter-spacing: 0.09em;
+    font-size: 10px; margin-right: 4px; }
+  /* stimulus picker */
+  #picker { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+    width: 760px; max-width: 100%; }
+  #picker button { font-size: 11.5px; padding: 4px 9px; }
+  #picker button.on { background: #1d2c3a; border-color: #38617d; color: #cfe6f4; }
+  /* stage */
+  #stage { position: relative; width: 760px; max-width: 100%; }
+  #banner { height: 46px; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: #7f8a9b; letter-spacing: 0.04em; }
+  #banner.big { font-size: 58px; line-height: 1; color: #dee7f2; font-weight: 700; }
+  #banner.left { color: #6fd8f0; }
+  #banner.right { color: #f0b878; }
+  canvas#c { display: block; width: 100%; background: #0b0b10; border-radius: 10px;
+    touch-action: manipulation; cursor: pointer; border: 1px solid #1b1f2a; }
+  #halves { position: absolute; inset: 46px 0 0 0; display: flex; pointer-events: none; }
+  #halves div { flex: 1; display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 6px; font-size: 11px; color: #3d4756; opacity: 0.9; }
+  canvas#strip { display: block; width: 100%; height: 26px; border-radius: 5px; margin-top: 6px; }
+  #striplab { display: flex; justify-content: space-between; font-size: 10px;
+    color: #5d6675; margin-top: 3px; }
+  /* controls */
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    justify-content: center; font-size: 12px; width: 760px; max-width: 100%; }
+  .row.small { font-size: 11px; color: #7f8a9b; }
+  label { display: flex; gap: 6px; align-items: center; }
+  .glabel { font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; color: #616b7a; }
+  .grp { display: inline-flex; gap: 8px; align-items: center; }
+  input[type=range] { width: 92px; accent-color: #46a6c4; height: 22px; }
+  button { background: #111721; color: #c2cbd8; border: 1px solid #27313f;
+    border-radius: 6px; padding: 6px 12px; font: inherit; font-size: 12px;
+    cursor: pointer; min-height: 32px; }
+  button:hover { background: #1a2230; }
+  button.on { background: #1d2c3a; border-color: #38617d; color: #cfe6f4; }
+  .num { color: #9fb0c2; min-width: 30px; display: inline-block; }
+  /* readout */
+  #readout { width: 760px; max-width: 100%; font-size: 11.5px; color: #8f98a6;
+    background: #101018; border: 1px solid #1d2230; border-radius: 8px;
+    padding: 10px 12px; line-height: 1.7; }
+  #readout b { color: #dee7f2; font-weight: 600; }
+  #readout .k { color: #616b7a; text-transform: uppercase; letter-spacing: 0.08em;
+    font-size: 10px; margin-right: 5px; }
+  #readout table { border-collapse: collapse; font-size: 11px; margin-top: 6px; }
+  #readout td { padding: 1px 10px 1px 0; color: #7f8a9b; }
+  #notice { width: 760px; max-width: 100%; font-size: 12px; color: #f0b878;
+    border: 1px solid #4a3a20; background: rgba(240,184,120,0.06);
+    border-radius: 8px; padding: 10px 12px; line-height: 1.6; display: none; }
+  details { width: 760px; max-width: 100%; font-size: 12px; line-height: 1.7; color: #8f98a6; }
+  details summary { cursor: pointer; color: #767f8d; font-size: 11px; }
+  details p, details li { margin: 8px 0; }
+  details strong { color: #ccd6e2; }
+  a { color: #5fb2d4; }
+  footer { font-size: 11px; color: #666f7c; margin-top: 8px; }
+  @media (max-width: 520px) {
+    input[type=range] { width: 72px; }
+    .row { gap: 8px; }
+    #banner.big { font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <header id="head">
+    <h1><span id="title">Reverse Reverse</span> <a href="./">← all nine</a></h1>
+    <p id="tag"></p>
+    <p id="try"><span class="lead">try this</span><span id="trytext"></span></p>
+  </header>
+
+  <div id="notice"></div>
+
+  <div id="picker"></div>
+
+  <div id="stage">
+    <div id="banner"></div>
+    <canvas id="c" width="1200" height="900"></canvas>
+    <div id="halves"><div>← tap = left</div><div>tap = right →</div></div>
+  </div>
+
+  <div id="stage2" style="width:760px;max-width:100%">
+    <canvas id="strip" width="1200" height="52"></canvas>
+    <div id="striplab"><span>90 s ago</span><span id="stripmid">what you reported seeing</span><span>now</span></div>
+  </div>
+
+  <div class="row">
+    <span class="grp"><span class="glabel">mode</span>
+      <button data-mode="free">free</button>
+      <button data-mode="drill">drill</button>
+      <button data-mode="feed">feed</button>
+    </span>
+    <span class="grp"><span class="glabel">cue</span>
+      <input id="cue" type="range" min="0" max="1" step="0.01" value="0">
+      <span class="num" id="cuev">0.00</span>
+      <button id="fade">fade 1→0</button>
+    </span>
+    <span class="grp">
+      <button id="play">pause</button>
+      <button id="restart" style="display:none">start set</button>
+    </span>
+  </div>
+
+  <div class="row small" id="params"></div>
+
+  <div id="readout"></div>
+
+  <details id="tech">
+    <summary>techniques — how people actually force a flip</summary>
+    <ul id="techlist"></ul>
+  </details>
+
+  <footer>
+    <a href="./">index</a> ·
+    <a href="https://github.com/unforcedagi/shape-rotator">source</a> ·
+    <a href="https://unforcedagi.github.io/sketches/">sketches</a>
+  </footer>
+</div>
+
+<script type="module">
+import { STIMULI, BY_ID, get, defaults, DEFAULT_ID } from './stimuli/index.js';
+import { clear } from './lib/render.js';
+import { createFree, createDrill, createFeed, LEFT, RIGHT, COL, ARROW } from './lib/modes.js';
+import * as stats from './lib/stats.js';
+
+const TECHNIQUES = [
+  'Fixate <b>one</b> dot near the edge and simply decide it is the near one. Deciding is the move; do not wait to be convinced.',
+  'Blink hard, or close your eyes for a second. The percept often reassembles the other way.',
+  'Look slightly away and keep it in peripheral vision — peripheral motion is much weaker evidence, so it gives way easily.',
+  'Imagine where the camera is. Above the object, looking down; then below, looking up.',
+  'Cover the top half with your hand, hold the direction you see there, then uncover. Then do the bottom half.',
+  'Slow the period right down. Slow rotations are more ambiguous and easier to steer.',
+  'Turn the cue up until you can see the true direction, then hit <em>fade</em> and hold on to what you saw as the help disappears.'
+];
+document.getElementById('techlist').innerHTML = TECHNIQUES.map(t => '<li>' + t + '</li>').join('');
+
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const strip = document.getElementById('strip'), sctx = strip.getContext('2d');
+const banner = document.getElementById('banner');
+const readout = document.getElementById('readout');
+const notice = document.getElementById('notice');
+const cueEl = document.getElementById('cue'), cuev = document.getElementById('cuev');
+const playBtn = document.getElementById('play'), fadeBtn = document.getElementById('fade');
+const restartBtn = document.getElementById('restart');
+const paramsRow = document.getElementById('params');
+
+const PHASE0 = 0.13;   // a paused page should not sit on a flat, degenerate pose
+const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// --- state -----------------------------------------------------------------
+const q = new URLSearchParams(location.search);
+let stim = get(q.get('s') || DEFAULT_ID);
+let mode = ['free', 'drill', 'feed'].includes(q.get('mode')) ? q.get('mode') : 'free';
+let params = defaults(stim);
+let cue = 0, fadeFrom = null;
+let playing = !reduced, clockBase = performance.now(), clockAcc = 0;
+let frozen = null;                 // set by the screenshot hooks
+
+const free = createFree(() => renderReadout());
+let drill = createDrill(10, () => { renderReadout(); });
+const feed = createFeed(STIMULI.map(s => s.id), 15000, id => { setStim(id, true); });
+
+function clockNow(now) { return playing ? clockAcc + (now - clockBase) : clockAcc; }
+function setPlaying(v, now) {
+  if (v === playing) return;
+  if (v) { clockBase = now; playing = true; } else { clockAcc = clockNow(now); playing = false; }
+  playBtn.textContent = playing ? 'pause' : 'play';
+}
+
+// --- layout ----------------------------------------------------------------
+function resize() {
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = cv.clientWidth || 760;
+  const h = Math.round(w * 0.72);
+  cv.style.height = h + 'px';
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  strip.width = Math.round((strip.clientWidth || w) * dpr); strip.height = Math.round(26 * dpr);
+  draw(performance.now());
+}
+window.addEventListener('resize', resize);
+
+// --- stimulus --------------------------------------------------------------
+function setStim(id, keepUrl) {
+  stim = get(id);
+  params = defaults(stim);
+  document.getElementById('title').textContent = 'Reverse Reverse · ' + stim.name;
+  document.title = 'Reverse Reverse — ' + stim.name;
+  document.getElementById('tag').innerHTML = stim.blurb;
+  document.getElementById('trytext').textContent = ' ' + stim.tryThis;
+  buildParams();
+  for (const b of document.querySelectorAll('#picker button')) b.classList.toggle('on', b.dataset.id === stim.id);
+  if (!keepUrl) syncUrl();
+  renderReadout();
+}
+
+function syncUrl() {
+  const u = new URL(location.href);
+  u.searchParams.set('s', stim.id);
+  u.searchParams.set('mode', mode);
+  history.replaceState(null, '', u);
+}
+
+const picker = document.getElementById('picker');
+for (const s of STIMULI) {
+  const b = document.createElement('button');
+  b.textContent = s.name; b.dataset.id = s.id;
+  b.onclick = () => { if (mode === 'feed') setMode('free'); setStim(s.id); free.reset(); };
+  picker.appendChild(b);
+}
+
+function buildParams() {
+  paramsRow.innerHTML = '';
+  const lab = document.createElement('span');
+  lab.className = 'glabel'; lab.textContent = 'shape';
+  paramsRow.appendChild(lab);
+  for (const c of stim.controls) {
+    const l = document.createElement('label');
+    const span = document.createElement('span'); span.textContent = c.label;
+    const inp = document.createElement('input');
+    inp.type = 'range'; inp.min = c.min; inp.max = c.max; inp.step = c.step; inp.value = params[c.key];
+    const out = document.createElement('span'); out.className = 'num';
+    const fmt = v => (c.step < 1 ? (+v).toFixed(2) : String(Math.round(v))) + (c.unit || '');
+    out.textContent = fmt(params[c.key]);
+    inp.oninput = () => { params[c.key] = +inp.value; out.textContent = fmt(inp.value); };
+    l.append(span, inp, out);
+    paramsRow.appendChild(l);
+  }
+}
+
+// --- modes -----------------------------------------------------------------
+function setMode(m) {
+  mode = m;
+  for (const b of document.querySelectorAll('[data-mode]')) b.classList.toggle('on', b.dataset.mode === m);
+  document.getElementById('stage2').style.display = m === 'drill' ? 'none' : '';
+  paramsRow.style.display = m === 'feed' ? 'none' : '';
+  restartBtn.style.display = m === 'drill' ? '' : 'none';
+  if (m === 'drill') { drill = createDrill(10, () => renderReadout()); banner.textContent = 'press start set'; }
+  else if (m === 'free') banner.textContent = 'which way is it turning?  ← / →';
+  else banner.textContent = '';
+  banner.className = '';
+  if (m === 'feed') feed.start(performance.now());
+  syncUrl();
+  renderReadout();
+}
+for (const b of document.querySelectorAll('[data-mode]')) b.onclick = () => setMode(b.dataset.mode);
+restartBtn.onclick = () => { drill.start(performance.now()); };
+
+// --- input -----------------------------------------------------------------
+function report(dir) {
+  const now = performance.now();
+  if (mode === 'drill') { drill.press(dir, now); renderReadout(); return; }
+  free.press(dir, now);
+}
+window.addEventListener('keydown', e => {
+  if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (e.key === 'ArrowLeft' || e.key === 'a') { report(LEFT); e.preventDefault(); }
+  else if (e.key === 'ArrowRight' || e.key === 'd') { report(RIGHT); e.preventDefault(); }
+  else if (e.key === ' ') { setPlaying(!playing, performance.now()); e.preventDefault(); }
+  else if (e.key === 'f') { startFade(); }
+});
+cv.addEventListener('pointerdown', e => {
+  const r = cv.getBoundingClientRect();
+  report(e.clientX - r.left < r.width / 2 ? LEFT : RIGHT);
+});
+
+playBtn.onclick = () => setPlaying(!playing, performance.now());
+cueEl.oninput = () => { fadeFrom = null; cue = +cueEl.value; cuev.textContent = cue.toFixed(2); };
+function startFade() { fadeFrom = performance.now(); cue = 1; }
+fadeBtn.onclick = startFade;
+
+// --- readout ---------------------------------------------------------------
+function fmtS(ms) { return ms == null ? '—' : (ms / 1000).toFixed(2) + 's'; }
+
+function renderReadout() {
+  if (mode === 'free') {
+    const s = free.summary();
+    const t = stats.freeTotals(stim.id);
+    readout.innerHTML =
+      '<div><span class="k">free</span> press <b>←</b> or <b>→</b> (or tap a half of the canvas) every time ' +
+      'what you see changes. <b>space</b> pauses, <b>f</b> fades the cue.</div>' +
+      '<div><span class="k">this session</span> flips <b>' + s.flips + '</b> · mean hold <b>' +
+      fmtS(s.meanHold) + '</b> · currently seeing <b style="color:' + (free.current ? COL[free.current.dir] : '#7f8a9b') + '">' +
+      (free.current ? ARROW[free.current.dir] : 'not reported') + '</b></div>' +
+      '<div><span class="k">all time · ' + stim.id + '</span> ' + t.flips + ' flips over ' +
+      Math.round(t.seconds) + ' s in ' + t.sessions + ' sessions</div>';
+  } else if (mode === 'drill') {
+    const hist = stats.drillHistory(stim.id);
+    let h = '<div><span class="k">drill</span> when the big arrow appears, flip your percept to match it, ' +
+      'then press that arrow key. Ten rounds. Wrong key = a miss.</div>';
+    if (drill.phase === 'done') {
+      const s = drill.summary();
+      h += '<div><span class="k">set complete</span> median <b>' + fmtS(s.median) + '</b> · best <b>' +
+        fmtS(s.best) + '</b> · misses <b>' + s.misses + '/' + s.n + '</b></div>';
+    } else if (drill.phase !== 'idle') {
+      h += '<div><span class="k">round</span> <b>' + drill.round + ' / ' + drill.rounds + '</b>' +
+        (drill.results.length ? ' · last ' + fmtS(drill.results[drill.results.length - 1].latency) : '') + '</div>';
+    }
+    if (hist.length) {
+      h += '<table><tr><td>past sets</td><td>median</td><td>best</td><td>misses</td></tr>' +
+        hist.slice(-6).reverse().map(r => '<tr><td>' + new Date(r.ts).toLocaleDateString() + '</td><td>' +
+          fmtS(r.median) + '</td><td>' + fmtS(r.best) + '</td><td>' + r.misses + '</td></tr>').join('') +
+        '</table>';
+    }
+    h += '<div style="margin-top:6px"><button id="wipe">forget my stats</button></div>';
+    readout.innerHTML = h;
+    const wipe = document.getElementById('wipe');
+    if (wipe) wipe.onclick = () => { stats.clearAll(); renderReadout(); };
+  } else {
+    readout.innerHTML = '<div><span class="k">feed</span> all nine, fifteen seconds each, no controls. ' +
+      'The arrow keys still record what you see. Now showing <b>' + stim.name + '</b> (' +
+      (feed.index + 1) + '/' + STIMULI.length + ').</div>';
+  }
+}
+
+// --- the loop --------------------------------------------------------------
+let lastDrillPhase = '';
+function draw(now) {
+  // cue fade: 1 -> 0 over 8 s
+  if (fadeFrom != null) {
+    const k = (now - fadeFrom) / 8000;
+    cue = k >= 1 ? 0 : 1 - k;
+    if (k >= 1) fadeFrom = null;
+    cueEl.value = cue; cuev.textContent = cue.toFixed(2);
+  }
+
+  const period = params.period || 6;
+  // PHASE0 only moves where the loop starts; the loop is still exactly periodic,
+  // so a recording of one period still joins to itself.
+  const phase = frozen != null ? frozen : (clockNow(now) / 1000 / period + PHASE0) % 1;
+
+  clear(ctx, stim.bg || '#0b0b10');
+  stim.draw(ctx, phase, params, cue, { detail: 1 });
+
+  if (mode === 'free') {
+    free.tick(now);
+    free.drawStrip(sctx, now, 90000);
+  } else if (mode === 'drill') {
+    drill.tick(now);
+    if (drill.phase === 'countdown') {
+      banner.className = 'big';
+      banner.textContent = String(Math.max(1, drill.countdown));
+    } else if (drill.phase === 'gap') {
+      banner.className = ''; banner.textContent = 'hold whatever you see …';
+    } else if (drill.phase === 'target') {
+      banner.className = 'big ' + (drill.target === LEFT ? 'left' : 'right');
+      banner.textContent = ARROW[drill.target];
+    } else if (drill.phase === 'done') {
+      banner.className = ''; banner.textContent = 'set complete — press start set to go again';
+    }
+    if (drill.phase !== lastDrillPhase) {
+      if (drill.phase === 'done') {
+        const s = drill.summary();
+        stats.recordDrillSet(stim.id, { ts: Date.now(), median: s.median, best: s.best, misses: s.misses, n: s.n });
+      }
+      lastDrillPhase = drill.phase;
+      renderReadout();
+    }
+  } else if (mode === 'feed') {
+    feed.tick(now);
+    free.tick(now);
+    free.drawStrip(sctx, now, 90000);
+    banner.className = '';
+    banner.textContent = stim.name + '  ·  ' + Math.ceil(feed.remaining(now) / 1000) + 's';
+  }
+  if (mode === 'free' && ((now / 500) | 0) !== ((lastTick / 500) | 0)) renderReadout();
+  lastTick = now;
+  raf = requestAnimationFrame(draw);
+}
+let lastTick = 0, raf = 0;
+
+// --- reduced motion --------------------------------------------------------
+if (reduced) {
+  notice.style.display = 'block';
+  notice.innerHTML = 'This site <b>is</b> motion — every illusion here is a moving image, and there is no ' +
+    'still version that does anything. Your system asks for reduced motion, so nothing is playing. ' +
+    '<button id="go" style="margin-left:8px">play anyway</button>';
+  document.getElementById('go').onclick = () => {
+    notice.style.display = 'none';
+    setPlaying(true, performance.now());
+  };
+  playBtn.textContent = 'play';
+}
+
+// --- screenshot / test hooks ----------------------------------------------
+window.__sr = {
+  setStim: id => { setStim(id); },
+  setMode: m => setMode(m),
+  setCue: v => { fadeFrom = null; cue = +v; cueEl.value = v; cuev.textContent = (+v).toFixed(2); },
+  setParam: (k, v) => { params[k] = +v; buildParams(); },
+  freezeAt: p => { frozen = p; },
+  unfreeze: () => { frozen = null; },
+  ready: true
+};
+
+// --- boot ------------------------------------------------------------------
+setStim(stim.id, true);
+setMode(mode);
+cueEl.value = cue; cuev.textContent = cue.toFixed(2);
+playBtn.textContent = playing ? 'pause' : 'play';
+resize();
+raf = requestAnimationFrame(draw);
+window.addEventListener('beforeunload', () => {
+  const s = free.summary();
+  if (s.n) stats.recordFree(stim.id, { seconds: s.total / 1000, flips: s.flips });
+});
+</script>
+</body>
+</html>
